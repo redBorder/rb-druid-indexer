@@ -38,22 +38,21 @@
 
 ##  Overview
 
-<code>`rb-druid-indexer` is a cluster-compatible service designed to manage the indexing of Kafka data streams into Druid. It handles task announcements, generates configuration specification files, and submits tasks to the Druid Supervisor.
-</code>
+`rb-druid-indexer` is a cluster-compatible service designed to manage the indexing of Kafka data streams into Druid. It handles task announcements, generates configuration specification files, and submits tasks to the Druid Supervisor.
 
 ---
 
 ##  Features
 
-<code>❯ Cluster compatible using ZooKeeper </code>
-<code>❯ Automatic task ingestion & specfile configuration </code>
-<code>❯ FailOver support for long-term ingestion </code>
+- Cluster compatible using ZooKeeper 
+- Automatic task ingestion & specfile configuration
+- FailOver support for long-term ingestion
 
 ---
 
 ## Configuration
 
-<code>The configuration for `rb-druid-indexer` is defined in a YAML file and includes settings for both Zookeeper and the tasks that should be executed. Below is an example configuration file:</code>
+The configuration for `rb-druid-indexer` is defined in a YAML file and includes settings for both Zookeeper and the tasks that should be executed. Below is an example configuration file:
 
 ```yaml
 zookeeper_servers:
@@ -106,7 +105,7 @@ tasks:
 - **Example**: 
     - `"kafka.service:9092"`
 
-<code>Every dataSource is managed in ```/druid/datasources/${datasource}.go for example</code>
+Every dataSource is managed in `/druid/datasources/${datasource}.go` for example
 
 ```go
 package datasources
@@ -147,7 +146,7 @@ var FlowDimensions = []string{
 const FlowDataSource = "rb_flow"
 ```
 
-<code>and later published in the `config.go` file in `/druid/datasources/config.go`</code>
+and later published in the `config.go` file in `/druid/datasources/config.go`
 
 ```go
 var Configs = map[string]DataSourceConfig{
@@ -164,7 +163,8 @@ var Configs = map[string]DataSourceConfig{
 }
 ```
 
-<code>So if you want to add your own you have to make a copy of any datasource and include in the config.go of datasource for later call it with your `config.yml`</code>
+
+So if you want to add your own you have to make a copy of any datasource and include in the config.go of datasource for later call it with your `config.yml`
 ---
 
 ##  Project Structure
@@ -326,13 +326,6 @@ Run rb-druid-indexer using the following command:
 
 
 ---
-##  Project Roadmap
-
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
-
----
 
 ##  Contributing
 
@@ -380,11 +373,5 @@ Run rb-druid-indexer using the following command:
 ##  License
 
 This project is protected under the [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.txt) License. For more details, refer to the [LICENSE](https://www.gnu.org/licenses/agpl-3.0.txt) file.
-
----
-
-##  Acknowledgments
-
-- List any resources, contributors, inspiration, etc. here.
 
 ---
