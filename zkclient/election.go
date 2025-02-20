@@ -83,7 +83,7 @@ func (zkClient *ZKClient) GetLeader() (string, error) {
 func (zkClient *ZKClient) IsLeader(nodePath string) bool {
 	leader, err := zkClient.GetLeader()
 	if err != nil {
-		log.Printf("Error getting leader: %v", err)
+		log.Fatalf("Error getting leader: %v", err)
 		return false
 	}
 	return nodePath == LEADER_ELECTION_PATH+"/"+leader

@@ -1,5 +1,5 @@
 zookeeper_servers:
-  - "127.0.0.1:2181"
+  - "10.2.209.90:2181"
 
 tasks:
   - task_name: "rb_monitor"
