@@ -28,6 +28,8 @@ import (
 
 func main() {
 
+	logger.InitLogger()
+
 	configFilePath := flag.String("config", "config.yml", "Path to the configuration file (YAML)")
 
 	flag.Parse()
