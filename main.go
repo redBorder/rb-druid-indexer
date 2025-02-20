@@ -57,7 +57,7 @@ func main() {
 	for {
 		if !zk.IsLeader(nodePath) {
 			logger.Log.Info("I am not the leader. Waiting...")
-			time.Sleep(2 * time.Second)
+			time.Sleep(60 * time.Second)
 			continue
 		}
 
@@ -107,6 +107,6 @@ func main() {
 			druidrouter.SubmitTask(router.Address, router.Port, jsonStr)
 		}
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
