@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"rb-druid-indexer/logger"
 
 	"gopkg.in/yaml.v3"
 )
@@ -27,6 +28,7 @@ type Config struct {
 func LoadConfig(filePath string) (*Config, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
+		logger.Log.Errorf("could not open config file")
 		return nil, fmt.Errorf("could not open config file: %w", err)
 	}
 	defer file.Close()
@@ -36,6 +38,7 @@ func LoadConfig(filePath string) (*Config, error) {
 	decoder := yaml.NewDecoder(file)
 	err = decoder.Decode(&config)
 	if err != nil {
+		logger.Log.Errorf("could not decode file")
 		return nil, fmt.Errorf("could not decode config file: %w", err)
 	}
 
@@ -44,6 +47,7 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 
 	if len(config.ZookeeperServers) == 0 {
+		logger.Log.Errorf("zookeeper_servers must be provided in the config file")
 		return nil, fmt.Errorf("zookeeper_servers must be provided in the config file")
 	}
 

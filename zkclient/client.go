@@ -19,6 +19,7 @@ package zkclient
 import (
 	"encoding/json"
 	"fmt"
+	"rb-druid-indexer/logger"
 	"time"
 
 	"github.com/samuel/go-zookeeper/zk"
@@ -50,6 +51,7 @@ func GetDruidRouterInfo(zookeeperServers []string) (*DruidRouter, error) {
 	}
 
 	if len(children) == 0 {
+		logger.Log.Errorf("no routers found in Zookeeper")
 		return nil, fmt.Errorf("no routers found in Zookeeper")
 	}
 

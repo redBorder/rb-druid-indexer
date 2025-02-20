@@ -18,51 +18,50 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
-	"time"
-
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
 	druiddatasources "rb-druid-indexer/druid/datasources"
+	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
+	"time"
 )
 
 func main() {
+
 	configFilePath := flag.String("config", "config.yml", "Path to the configuration file (YAML)")
 
 	flag.Parse()
 
 	cfg, err := config.LoadConfig(*configFilePath)
 	if err != nil {
-		log.Fatalf("Error loading configuration: %v", err)
+		logger.Log.Fatalf("Error loading configuration: %v", err)
 	}
 
 	router, err := zkclient.GetDruidRouterInfo(cfg.ZookeeperServers)
 	if err != nil {
-		log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
+		logger.Log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
 	}
 
 	zk, err := zkclient.NewZKClient(cfg.ZookeeperServers)
 	if err != nil {
-		log.Fatalf("Error connecting to ZooKeeper: %v", err)
+		logger.Log.Fatalf("Error connecting to ZooKeeper: %v", err)
 	}
 
 	nodePath, err := zk.CreateLeaderNode()
 	if err != nil {
-		log.Fatalf("Error creating leader node: %v", err)
+		logger.Log.Fatalf("Error creating leader node: %v", err)
 	}
 
 	for {
 		if !zk.IsLeader(nodePath) {
-			fmt.Println("I am not the leader. Waiting...")
+			logger.Log.Info("I am not the leader. Waiting...")
 			time.Sleep(2 * time.Second)
 			continue
 		}
 
 		supervisorTasks, err := druidrouter.GetSupervisors(router.Address, router.Port)
 		if err != nil {
-			log.Fatalf("Failed to get supervisor tasks: %v", err)
+			logger.Log.Fatalf("Failed to get supervisor tasks: %v", err)
 		}
 
 		var taskNames []string
@@ -81,12 +80,12 @@ func main() {
 				}
 			}
 			if taskConfig == nil {
-				log.Fatalf("No configuration found for task: %s", taskName)
+				logger.Log.Fatalf("No configuration found for task: %s", taskName)
 			}
 
 			config, found := druiddatasources.GetDataSourceConfig(taskConfig.TaskName)
 			if !found {
-				log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
+				logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
 			}
 
 			jsonStr, err := druidrouter.GenerateConfig(
@@ -100,7 +99,7 @@ func main() {
 				config.Metrics,
 			)
 			if err != nil {
-				log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
+				logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 			}
 
 			druidrouter.SubmitTask(router.Address, router.Port, jsonStr)

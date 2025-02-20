@@ -19,6 +19,7 @@ package zkclient
 import (
 	"fmt"
 	"log"
+	"rb-druid-indexer/logger"
 	"sort"
 	"strconv"
 	"time"
@@ -77,12 +78,14 @@ func (zkClient *ZKClient) GetLeader() (string, error) {
 	if len(children) > 0 {
 		return children[0], nil
 	}
+	logger.Log.Errorf("no zookeeper leader found")
 	return "", fmt.Errorf("no leader found")
 }
 
 func (zkClient *ZKClient) IsLeader(nodePath string) bool {
 	leader, err := zkClient.GetLeader()
 	if err != nil {
+		logger.Log.Errorf("Error getting leader")
 		log.Fatalf("Error getting leader: %v", err)
 		return false
 	}

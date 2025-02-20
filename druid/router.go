@@ -20,9 +20,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"net/http"
+	"rb-druid-indexer/logger"
 	"strings"
 )
 
@@ -31,25 +30,30 @@ func GetSupervisors(host string, port int) ([]string, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
+		logger.Log.Errorf("Failed to send GET request: %v", err)
 		return nil, fmt.Errorf("failed to send GET request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		logger.Log.Warnf("Failed to fetch supervisors, status code: %d", resp.StatusCode)
 		return nil, fmt.Errorf("failed to fetch supervisors, status code: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		logger.Log.Errorf("Failed to read response body: %v", err)
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
 	var supervisors []string
 	err = json.Unmarshal(body, &supervisors)
 	if err != nil {
+		logger.Log.Errorf("Failed to unmarshal response: %v", err)
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
 	}
 
+	logger.Log.Infof("Successfully fetched supervisors: %v", supervisors)
 	return supervisors, nil
 }
 
@@ -57,18 +61,21 @@ func SubmitTask(host string, port int, task string) {
 	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", host, port)
 	resp, err := http.Post(url, "application/json", strings.NewReader(task))
 	if err != nil {
-		log.Printf("Error submitting task: %v", err)
+		logger.Log.Errorf("Error submitting task: %v", err)
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Error reading response: %v", err)
+		logger.Log.Errorf("Error reading response: %v", err)
 		return
 	}
+
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
+		logger.Log.Warnf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
 		return
 	}
-	log.Printf("Task submitted successfully: %s", string(body))
+
+	logger.Log.Infof("Task submitted successfully: %s", string(body))
 }
