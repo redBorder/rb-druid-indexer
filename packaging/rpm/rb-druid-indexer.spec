@@ -8,7 +8,6 @@ License:   AGPL-3.0
 URL:       https://github.com/redBorder/rb-druid-indexer
 Source0:   %{name}-%{version}.tar.gz
 
-Requires: pmacct arpwatch rsyslog
 BuildRequires: golang
 
 %global debug_package %{nil}
