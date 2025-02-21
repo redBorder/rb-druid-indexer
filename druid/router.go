@@ -20,10 +20,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"rb-druid-indexer/logger"
 	"strings"
 )
+
+type BuildSegmentsStats struct {
+	Processed          float64 `json:"processed"`
+	ProcessedBytes     float64 `json:"processedBytes"`
+	Unparseable        float64 `json:"unparseable"`
+	ThrownAway         float64 `json:"thrownAway"`
+	ProcessedWithError float64 `json:"processedWithError"`
+}
+
+type BuildSegments struct {
+	FiveM    BuildSegmentsStats `json:"5m"`
+	FifteenM BuildSegmentsStats `json:"15m"`
+	OneM     BuildSegmentsStats `json:"1m"`
+}
+
+type MovingAverages struct {
+	BuildSegments BuildSegments `json:"buildSegments"`
+}
+
+type TotalsBuildSegments struct {
+	Processed          int     `json:"processed"`
+	ProcessedBytes     float64 `json:"processedBytes"`
+	ProcessedWithError int     `json:"processedWithError"`
+	ThrownAway         int     `json:"thrownAway"`
+	Unparseable        int     `json:"unparseable"`
+}
+
+type Totals struct {
+	BuildSegments TotalsBuildSegments `json:"buildSegments"`
+}
+
+type SupervisorStats struct {
+	MovingAverages MovingAverages `json:"movingAverages"`
+	Totals         Totals         `json:"totals"`
+}
 
 func GetSupervisors(host string, port int) ([]string, error) {
 	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", host, port)
@@ -78,4 +114,57 @@ func SubmitTask(host string, port int, task string) {
 	}
 
 	logger.Log.Infof("Task submitted successfully: %s", string(body))
+}
+
+func DeleteTask(host string, port int, task string) {
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", host, port, task)
+	resp, err := http.Post(url, "application/json", strings.NewReader(task))
+	if err != nil {
+		logger.Log.Errorf("Error submitting task: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Log.Errorf("Error reading response: %v", err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logger.Log.Warnf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
+		return
+	}
+
+	logger.Log.Infof("DeleteTask submitted successfully: %s", string(body))
+}
+
+func CheckStats(host string, port int, task string) (map[string]map[string]SupervisorStats, error) {
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/stats", host, port, task)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Printf("Error sending GET request: %v", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
+	}
+
+	var supervisors map[string]map[string]SupervisorStats
+	if err := json.Unmarshal(body, &supervisors); err != nil {
+		log.Printf("Error unmarshalling JSON response: %v", err)
+		return nil, err
+	}
+
+	return supervisors, nil
 }

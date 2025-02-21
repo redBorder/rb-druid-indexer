@@ -35,6 +35,31 @@ var Configs = map[string]DataSourceConfig{
 		Metrics:    MonitorMetrics,
 		Dimensions: MonitorDimensions,
 	},
+	"rb_wireless": {
+		DataSource: WirelessDataSource,
+		Metrics:    WirelessMetrics,
+		Dimensions: WirelessDimensions,
+	},
+	"rb_loc": {
+		DataSource: LocationDataSource,
+		Metrics:    LocationMetrics,
+		Dimensions: LocationDimensions,
+	},
+	"rb_event": {
+		DataSource: EventDataSource,
+		Metrics:    EventMetrics,
+		Dimensions: EventDimensions,
+	},
+	"rb_state": {
+		DataSource: StateDataSource,
+		Metrics:    StateMetrics,
+		Dimensions: StateDimensions,
+	},
+	"rb_vault": {
+		DataSource: VaultDataSource,
+		Metrics:    VaultMetrics,
+		Dimensions: VaultDimensions,
+	},
 }
 
 func GetDataSourceConfig(taskName string) (DataSourceConfig, bool) {
