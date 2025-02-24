@@ -28,14 +28,12 @@ import (
 var topicFlags = make(map[string]bool)
 var mu sync.Mutex
 
-func NewKafkaConsumer(brokers, topic, group string) (*kafka.Reader, error) {
+func NewKafkaConsumer(brokers string, topic string) (*kafka.Reader, error) {
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:     []string{brokers},
-		Topic:       topic,
-		GroupID:     group,
-		MinBytes:    10e3,
-		MaxBytes:    10e6,
-		StartOffset: kafka.LastOffset,
+		Brokers:  []string{brokers},
+		Topic:    topic,
+		MinBytes: 10e3,
+		MaxBytes: 10e6,
 	})
 
 	if reader == nil {
@@ -69,9 +67,9 @@ func ReadMessagesForTopic(reader *kafka.Reader, topic string) {
 	logger.Log.Infof("No more messages for topic %s", topic)
 }
 
-func StartConsumer(topicBrokers map[string]string, group string) {
+func StartConsumer(topicBrokers map[string]string) {
 	for topic, broker := range topicBrokers {
-		reader, err := NewKafkaConsumer(broker, topic, group)
+		reader, err := NewKafkaConsumer(broker, topic)
 		if err != nil {
 			logger.Log.Errorf("Error creating consumer for topic %s on broker %s: %v", topic, broker, err)
 			continue
