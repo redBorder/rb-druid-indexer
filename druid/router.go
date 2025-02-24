@@ -191,6 +191,4 @@ func ResetSupervisorOffset(host string, port int, task string) (bool, error) {
 	} else {
 		return true, nil
 	}
-
-	return false, nil
 }
