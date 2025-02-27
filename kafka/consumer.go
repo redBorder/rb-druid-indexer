@@ -50,21 +50,11 @@ func ReadMessagesForTopic(reader *kafka.Reader, topic string) {
 	mu.Unlock()
 
 	for {
-		_, err := reader.ReadMessage(context.Background())
-		if err != nil {
-			break
-		}
-
+		reader.ReadMessage(context.Background())
 		mu.Lock()
 		topicFlags[topic] = true
 		mu.Unlock()
 	}
-
-	mu.Lock()
-	topicFlags[topic] = false
-	mu.Unlock()
-
-	logger.Log.Infof("No more messages for topic %s", topic)
 }
 
 func StartConsumer(topicBrokers map[string]string) {

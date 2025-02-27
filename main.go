@@ -116,12 +116,7 @@ func main() {
 				logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 			}
 
-			flag := rbkafka.CheckFlag(taskConfig.Feed)
-
-			if flag {
-				logger.Log.Info("Messages found, submiting supervisor")
-				druidrouter.SubmitTask(router.Address, router.Port, jsonStr)
-			}
+			druidrouter.SubmitTask(router.Address, router.Port, jsonStr)
 		}
 
 		for _, announcedTask := range supervisorTasks {
@@ -142,7 +137,7 @@ func main() {
 				for _, innerMap := range supervisors {
 					for _, stats := range innerMap {
 						if stats.MovingAverages.BuildSegments.OneM.Processed == 0 {
-							druidrouter.ResetSupervisorOffset(router.Address, router.Port, taskConfig.TaskName)
+							druidrouter.ResetSupervisor(router.Address, router.Port, taskConfig.TaskName)
 							rbkafka.SetFalseFlag(taskConfig.Feed)
 						}
 					}

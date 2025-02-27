@@ -169,12 +169,19 @@ func CheckStats(host string, port int, task string) (map[string]map[string]Super
 	return supervisors, nil
 }
 
-func ResetSupervisorOffset(host string, port int, task string) (bool, error) {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/resetOffsets", host, port, task)
+func ResetSupervisor(host string, port int, task string) (bool, error) {
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/reset", host, port, task)
 
-	resp, err := http.Get(url)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		log.Printf("Error sending GET request: %v", err)
+		log.Printf("Error creating POST request: %v", err)
+		return false, err
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Error sending POST request: %v", err)
 		return false, err
 	}
 	defer resp.Body.Close()
@@ -188,7 +195,7 @@ func ResetSupervisorOffset(host string, port int, task string) (bool, error) {
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
 		return false, fmt.Errorf("unexpected status code %d", resp.StatusCode)
-	} else {
-		return true, nil
 	}
+
+	return true, nil
 }
