@@ -116,27 +116,28 @@ func SubmitTask(host string, port int, task string) {
 	logger.Log.Infof("Task submitted successfully: %s", string(body))
 }
 
-func DeleteTask(host string, port int, task string) {
+func DeleteTask(host string, port int, task string) error {
 	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", host, port, task)
 	resp, err := http.Post(url, "application/json", strings.NewReader(task))
 	if err != nil {
 		logger.Log.Errorf("Error submitting task: %v", err)
-		return
+		return fmt.Errorf("failed to submit task %s: %w", task, err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logger.Log.Errorf("Error reading response: %v", err)
-		return
+		return fmt.Errorf("failed to read response for task %s: %w", task, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		logger.Log.Warnf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
-		return
+		return fmt.Errorf("unexpected status code %d for task %s: %s", resp.StatusCode, task, string(body))
 	}
 
 	logger.Log.Infof("DeleteTask submitted successfully: %s", string(body))
+	return nil
 }
 
 func CheckStats(host string, port int, task string) (map[string]map[string]SupervisorStats, error) {

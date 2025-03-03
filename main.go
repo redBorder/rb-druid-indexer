@@ -21,7 +21,6 @@ import (
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
 	druiddatasources "rb-druid-indexer/druid/datasources"
-	rbkafka "rb-druid-indexer/kafka"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
 	"time"
@@ -55,17 +54,10 @@ func main() {
 		logger.Log.Fatalf("Error creating leader node: %v", err)
 	}
 
-	taskBrokersMap := make(map[string]string)
-
-	for _, taskConfig := range cfg.Tasks {
-		taskBrokersMap[taskConfig.Feed] = taskConfig.KafkaHost
-	}
-
-	rbkafka.StartConsumer(taskBrokersMap)
-	logger.Log.Info("Starting consumers... waiting 60 seconds...")
-	time.Sleep(60 * time.Second)
+	cleaned := false
 
 	for {
+
 		if !zk.IsLeader(nodePath) {
 			logger.Log.Info("I am not the leader. Waiting...")
 			time.Sleep(60 * time.Second)
@@ -75,6 +67,18 @@ func main() {
 		supervisorTasks, err := druidrouter.GetSupervisors(router.Address, router.Port)
 		if err != nil {
 			logger.Log.Fatalf("Failed to get supervisor tasks: %v", err)
+		}
+
+		if !cleaned {
+			logger.Log.Info("Cleaning Supervisors (first start)...")
+			for _, task := range supervisorTasks {
+				err := druidrouter.DeleteTask(router.Address, router.Port, task)
+				if err != nil {
+					logger.Log.Error("Failed to delete task:", task, "Error:", err)
+					continue
+				}
+			}
+			cleaned = true
 		}
 
 		var taskNames []string
@@ -117,40 +121,6 @@ func main() {
 			}
 
 			druidrouter.SubmitTask(router.Address, router.Port, jsonStr)
-		}
-
-		for _, announcedTask := range supervisorTasks {
-			var taskConfig *config.TaskConfig
-			for _, t := range cfg.Tasks {
-				if t.TaskName == announcedTask {
-					taskConfig = &t
-					break
-				}
-			}
-			if taskConfig == nil {
-				logger.Log.Fatalf("No configuration found for task: %s", announcedTask)
-			}
-
-			supervisors, err := druidrouter.CheckStats(router.Address, router.Port, taskConfig.TaskName)
-
-			if err == nil {
-				for _, innerMap := range supervisors {
-					for _, stats := range innerMap {
-						if stats.MovingAverages.BuildSegments.OneM.Processed == 0 {
-							druidrouter.ResetSupervisor(router.Address, router.Port, taskConfig.TaskName)
-							rbkafka.SetFalseFlag(taskConfig.Feed)
-						}
-					}
-				}
-				flag := rbkafka.CheckFlag(taskConfig.Feed)
-				if !flag {
-					logger.Log.Info("No messages found in kafka topic, supervisor is holding a worker for a task, deleting from supervisor")
-					druidrouter.DeleteTask(router.Address, router.Port, taskConfig.TaskName)
-				}
-			} else {
-				logger.Log.Errorf("Error fetching supervisor stats %v", err)
-			}
-
 		}
 
 		time.Sleep(60 * time.Second)
