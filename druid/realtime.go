@@ -76,13 +76,7 @@ type TuningConfig struct {
 	Type string `json:"type"`
 }
 
-func GenerateConfig(namespace, dataSource, kafkaHost, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, metrics []Metrics) (string, error) {
-
-	if namespace != "" {
-		dataSource = dataSource + "_" + namespace
-		kafkaTopic = kafkaTopic + "_" + namespace
-	}
-
+func GenerateConfig(dataSource, kafkaHost, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, metrics []Metrics) (string, error) {
 	config := KafkaConfiguration{
 		Type: "kafka",
 		Spec: KafkaSpec{

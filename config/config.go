@@ -31,8 +31,8 @@ const (
 
 type TaskConfig struct {
 	TaskName  string `yaml:"task_name"`
-	Namespace string `yaml:"namespace"`
 	Feed      string `yaml:"feed"`
+	Spec      string `yaml:"spec"`
 	KafkaHost string `yaml:"kafka_host"`
 }
 

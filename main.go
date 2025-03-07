@@ -70,7 +70,7 @@ func main() {
 		}
 
 		if !cleaned {
-			logger.Log.Info("Cleaning Supervisors (first start)...")
+			logger.Log.Info("Cleaning Supervisors (first time)...")
 			for _, task := range supervisorTasks {
 				err := druidrouter.DeleteTask(router.Address, router.Port, task)
 				if err != nil {
@@ -101,14 +101,13 @@ func main() {
 				logger.Log.Fatalf("No configuration found for task: %s", taskName)
 			}
 
-			config, found := druiddatasources.GetDataSourceConfig(taskConfig.TaskName)
+			config, found := druiddatasources.GetDataSourceConfig(taskConfig.Spec)
 			if !found {
 				logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
 			}
 
 			jsonStr, err := druidrouter.GenerateConfig(
-				taskConfig.Namespace,
-				config.DataSource,
+				taskConfig.TaskName,
 				taskConfig.KafkaHost,
 				taskConfig.Feed,
 				"timestamp",

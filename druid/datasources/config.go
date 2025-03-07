@@ -40,7 +40,7 @@ var Configs = map[string]DataSourceConfig{
 		Metrics:    WirelessMetrics,
 		Dimensions: WirelessDimensions,
 	},
-	"rb_loc": {
+	"rb_location": {
 		DataSource: LocationDataSource,
 		Metrics:    LocationMetrics,
 		Dimensions: LocationDimensions,
@@ -59,6 +59,11 @@ var Configs = map[string]DataSourceConfig{
 		DataSource: VaultDataSource,
 		Metrics:    VaultMetrics,
 		Dimensions: VaultDimensions,
+	},
+	"rb_scanner": {
+		DataSource: ScannerDataSource,
+		Metrics:    ScannerMetrics,
+		Dimensions: ScannerDimensions,
 	},
 }
 
