@@ -65,41 +65,34 @@ type SupervisorStats struct {
 func GetSupervisors(routers []zkclient.DruidRouter) ([]string, error) {
 	var allSupervisors []string
 
-	for _, router := range routers {
-		url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", router.Address, router.Port)
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
 
-		resp, err := http.Get(url)
-		if err != nil {
-			logger.Log.Errorf("Failed to send GET request to %s: %v", url, err)
-			continue
-		}
-		defer resp.Body.Close()
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", router.Address, router.Port)
 
-		if resp.StatusCode != http.StatusOK {
-			logger.Log.Warnf("Failed to fetch supervisors from %s, status code: %d", url, resp.StatusCode)
-			continue
-		}
+	resp, err := http.Get(url)
+	if err != nil {
+		logger.Log.Errorf("Failed to send GET request to %s: %v", url, err)
+	}
+	defer resp.Body.Close()
 
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			logger.Log.Errorf("Failed to read response body from %s: %v", url, err)
-			continue
-		}
-
-		var supervisors []string
-		err = json.Unmarshal(body, &supervisors)
-		if err != nil {
-			logger.Log.Errorf("Failed to unmarshal response from %s: %v", url, err)
-			continue
-		}
-
-		logger.Log.Infof("Successfully fetched supervisors from %s: %v", url, supervisors)
-		allSupervisors = append(allSupervisors, supervisors...)
+	if resp.StatusCode != http.StatusOK {
+		logger.Log.Warnf("Failed to fetch supervisors from %s, status code: %d", url, resp.StatusCode)
 	}
 
-	if len(allSupervisors) == 0 {
-		return nil, fmt.Errorf("failed to retrieve any supervisors from routers")
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Log.Errorf("Failed to read response body from %s: %v", url, err)
 	}
+
+	var supervisors []string
+	err = json.Unmarshal(body, &supervisors)
+	if err != nil {
+		logger.Log.Errorf("Failed to unmarshal response from %s: %v", url, err)
+	}
+
+	logger.Log.Infof("Successfully fetched supervisors from %s: %v", url, supervisors)
+	allSupervisors = append(allSupervisors, supervisors...)
 
 	return allSupervisors, nil
 }
@@ -136,26 +129,25 @@ func SubmitTask(routers []zkclient.DruidRouter, task string) {
 }
 
 func DeleteTask(routers []zkclient.DruidRouter, task string) {
-	for _, router := range routers {
-		url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", router.Address, router.Port, task)
-		resp, err := http.Post(url, "application/json", strings.NewReader(task))
-		if err != nil {
-			logger.Log.Errorf("Error deleting task %s from %s: %v", task, url, err)
-			continue
-		}
-		defer resp.Body.Close()
 
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			logger.Log.Errorf("Error reading response for task %s from %s: %v", task, url, err)
-			continue
-		}
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
 
-		if resp.StatusCode != http.StatusOK {
-			logger.Log.Warnf("Unexpected status code %d for task %s from %s, response: %s", resp.StatusCode, task, url, string(body))
-			continue
-		}
-
-		logger.Log.Infof("Task %s deleted successfully from %s: %s", task, url, string(body))
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", router.Address, router.Port, task)
+	resp, err := http.Post(url, "application/json", strings.NewReader(task))
+	if err != nil {
+		logger.Log.Errorf("Error deleting task %s from %s: %v", task, url, err)
 	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.Log.Errorf("Error reading response for task %s from %s: %v", task, url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logger.Log.Warnf("Unexpected status code %d for task %s from %s, response: %s", resp.StatusCode, task, url, string(body))
+	}
+
+	logger.Log.Infof("Task %s deleted successfully from %s: %s", task, url, string(body))
 }
