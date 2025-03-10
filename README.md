@@ -304,3 +304,9 @@ Run rb-druid-indexer using the following command:
 This project is protected under the [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.txt) License. For more details, refer to the [LICENSE](https://www.gnu.org/licenses/agpl-3.0.txt) file.
 
 ---
+
+##  Author
+
+This project is developed for redBorder and the OS community by Miguel Álvarez <malvarez@redborder.com>
+
+---
