@@ -43,9 +43,10 @@
 
 ##  Features
 
-- Cluster compatible using ZooKeeper 
-- Automatic task ingestion & specfile configuration
-- FailOver support for long-term ingestion
+- Multi Druid Router compatible
+- Auto Finder for Druid Routers
+- Cluster compatible & FailOver support using ZooKeeper 
+- Automatic task managment and load balancer when submiting / deleting tasks
 
 ---
 
@@ -169,115 +170,44 @@ So if you want to add your own you have to make a copy of any datasource and inc
 ##  Project Structure
 
 ```sh
-└── rb-druid-indexer/
-    ├── LICENSE
-    ├── config
-    │   └── config.go
-    ├── druid
-    │   ├── datasources
-    │   ├── realtime.go
-    │   └── router.go
-    ├── example_config.yml
-    ├── go.mod
-    ├── go.sum
-    ├── main.go
-    └── zkclient
-        ├── client.go
-        ├── election.go
-        └── task_announcer.go
+rb-druid-indexer
+├── assets
+│   └── image.png
+├── config
+│   └── config.go
+├── druid
+│   ├── datasources
+│   │   ├── config.go
+│   │   ├── event.go
+│   │   ├── flow.go
+│   │   ├── location.go
+│   │   ├── monitor.go
+│   │   ├── scanner.go
+│   │   ├── state.go
+│   │   ├── vault.go
+│   │   └── wireless.go
+│   ├── realtime.go
+│   └── router.go
+├── example_config.yml
+├── go.mod
+├── go.sum
+├── LICENSE
+├── logger
+│   └── logger.go
+├── main.go
+├── Makefile
+├── packaging
+│   └── rpm
+│       ├── Makefile
+│       ├── rb-druid-indexer.service
+│       ├── rb-druid-indexer.spec
+├── rb-druid-indexer
+├── README.md
+└── zkclient
+    ├── client.go
+    ├── election.go
+    └── task_announcer.go
 ```
-
-
-###  Project Index
-<details open>
-	<summary><b><code>RB-DRUID-INDEXER/</code></b></summary>
-	<details> <!-- __root__ Submodule -->
-		<summary><b>__root__</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/main.go'>main.go</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/go.mod'>go.mod</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/go.sum'>go.sum</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/example_config.yml'>example_config.yml</a></b></td>
-			</tr>
-			</table>
-		</blockquote>
-	</details>
-	<details> <!-- config Submodule -->
-		<summary><b>config</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/config/config.go'>config.go</a></b></td>
-			</tr>
-			</table>
-		</blockquote>
-	</details>
-	<details> <!-- zkclient Submodule -->
-		<summary><b>zkclient</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/zkclient/election.go'>election.go</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/zkclient/client.go'>client.go</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/zkclient/task_announcer.go'>task_announcer.go</a></b></td>
-			</tr>
-			</table>
-		</blockquote>
-	</details>
-	<details> <!-- druid Submodule -->
-		<summary><b>druid</b></summary>
-		<blockquote>
-			<table>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/realtime.go'>realtime.go</a></b></td>
-			</tr>
-			<tr>
-				<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/router.go'>router.go</a></b></td>
-			</tr>
-			</table>
-			<details>
-				<summary><b>datasources</b></summary>
-				<blockquote>
-					<table>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/location.go'>location.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/config.go'>config.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/event.go'>event.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/wireless.go'>wireless.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/monitor.go'>monitor.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/state.go'>state.go</a></b></td>
-					</tr>
-					<tr>
-						<td><b><a href='https://github.com/redBorder/rb-druid-indexer/blob/master/druid/datasources/flow.go'>flow.go</a></b></td>
-					</tr>
-					</table>
-				</blockquote>
-			</details>
-		</blockquote>
-	</details>
-</details>
 
 ---
 ##  Getting Started
