@@ -28,7 +28,6 @@
   - [ Prerequisites](#-prerequisites)
   - [ Installation](#-installation)
   - [ Usage](#-usage)
-  - [ Testing](#-testing)
 - [ Project Roadmap](#-project-roadmap)
 - [ Contributing](#-contributing)
 - [ License](#-license)
@@ -60,11 +59,11 @@ zookeeper_servers:
 
 tasks:
   - task_name: "rb_monitor"
-    namespace: ""
-    feed: "rb_monitor"
+    feed: "rb_monitor_12345" # Kafka topic
+    spec: "rb_monitor"
     kafka_host: "kafka.service:9092"
   - task_name: "rb_flow"
-    namespace: ""
+    feed: "rb_flow"
     feed: "rb_flow_post"
     kafka_host: "kafka.service:9092"
 ```
@@ -86,8 +85,8 @@ tasks:
     - `"rb_monitor"`
     - `"rb_flow"`
 
-### namespace (optional)
-- **Description**: The namespace associated with the task. This can be left empty if not needed.
+### spec
+- **Description**: The spec file name associated with the task (for realtime configuration)
 - **Type**: String.
 - **Example**: 
     - `""` (empty)
