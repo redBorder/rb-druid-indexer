@@ -20,10 +20,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"rb-druid-indexer/logger"
+	"rb-druid-indexer/zkclient"
 	"strings"
+	"time"
 )
 
 type BuildSegmentsStats struct {
@@ -61,142 +62,100 @@ type SupervisorStats struct {
 	Totals         Totals         `json:"totals"`
 }
 
-func GetSupervisors(host string, port int) ([]string, error) {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", host, port)
+func GetSupervisors(routers []zkclient.DruidRouter) ([]string, error) {
+	var allSupervisors []string
 
-	resp, err := http.Get(url)
-	if err != nil {
-		logger.Log.Errorf("Failed to send GET request: %v", err)
-		return nil, fmt.Errorf("failed to send GET request: %v", err)
+	for _, router := range routers {
+		url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", router.Address, router.Port)
+
+		resp, err := http.Get(url)
+		if err != nil {
+			logger.Log.Errorf("Failed to send GET request to %s: %v", url, err)
+			continue
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			logger.Log.Warnf("Failed to fetch supervisors from %s, status code: %d", url, resp.StatusCode)
+			continue
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logger.Log.Errorf("Failed to read response body from %s: %v", url, err)
+			continue
+		}
+
+		var supervisors []string
+		err = json.Unmarshal(body, &supervisors)
+		if err != nil {
+			logger.Log.Errorf("Failed to unmarshal response from %s: %v", url, err)
+			continue
+		}
+
+		logger.Log.Infof("Successfully fetched supervisors from %s: %v", url, supervisors)
+		allSupervisors = append(allSupervisors, supervisors...)
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		logger.Log.Warnf("Failed to fetch supervisors, status code: %d", resp.StatusCode)
-		return nil, fmt.Errorf("failed to fetch supervisors, status code: %d", resp.StatusCode)
+	if len(allSupervisors) == 0 {
+		return nil, fmt.Errorf("failed to retrieve any supervisors from routers")
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logger.Log.Errorf("Failed to read response body: %v", err)
-		return nil, fmt.Errorf("failed to read response body: %v", err)
-	}
-
-	var supervisors []string
-	err = json.Unmarshal(body, &supervisors)
-	if err != nil {
-		logger.Log.Errorf("Failed to unmarshal response: %v", err)
-		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
-	}
-
-	logger.Log.Infof("Successfully fetched supervisors: %v", supervisors)
-	return supervisors, nil
+	return allSupervisors, nil
 }
 
-func SubmitTask(host string, port int, task string) {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", host, port)
+func SubmitTask(routers []zkclient.DruidRouter, task string) {
+	if len(routers) == 0 {
+		logger.Log.Errorf("No available routers to submit the task")
+		return
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor", router.Address, router.Port)
 	resp, err := http.Post(url, "application/json", strings.NewReader(task))
 	if err != nil {
-		logger.Log.Errorf("Error submitting task: %v", err)
+		logger.Log.Errorf("Error submitting task to %s: %v", url, err)
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logger.Log.Errorf("Error reading response: %v", err)
+		logger.Log.Errorf("Error reading response from %s: %v", url, err)
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		logger.Log.Warnf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
+		logger.Log.Warnf("Unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
 		return
 	}
 
-	logger.Log.Infof("Task submitted successfully: %s", string(body))
+	logger.Log.Infof("Task submitted successfully to %s: %s", url, string(body))
 }
 
-func DeleteTask(host string, port int, task string) error {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", host, port, task)
-	resp, err := http.Post(url, "application/json", strings.NewReader(task))
-	if err != nil {
-		logger.Log.Errorf("Error submitting task: %v", err)
-		return fmt.Errorf("failed to submit task %s: %w", task, err)
+func DeleteTask(routers []zkclient.DruidRouter, task string) {
+	for _, router := range routers {
+		url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/terminate", router.Address, router.Port, task)
+		resp, err := http.Post(url, "application/json", strings.NewReader(task))
+		if err != nil {
+			logger.Log.Errorf("Error deleting task %s from %s: %v", task, url, err)
+			continue
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logger.Log.Errorf("Error reading response for task %s from %s: %v", task, url, err)
+			continue
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			logger.Log.Warnf("Unexpected status code %d for task %s from %s, response: %s", resp.StatusCode, task, url, string(body))
+			continue
+		}
+
+		logger.Log.Infof("Task %s deleted successfully from %s: %s", task, url, string(body))
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logger.Log.Errorf("Error reading response: %v", err)
-		return fmt.Errorf("failed to read response for task %s: %w", task, err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		logger.Log.Warnf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
-		return fmt.Errorf("unexpected status code %d for task %s: %s", resp.StatusCode, task, string(body))
-	}
-
-	logger.Log.Infof("DeleteTask submitted successfully: %s", string(body))
-	return nil
-}
-
-func CheckStats(host string, port int, task string) (map[string]map[string]SupervisorStats, error) {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/stats", host, port, task)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Printf("Error sending GET request: %v", err)
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("Error reading response body: %v", err)
-		return nil, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
-		return nil, fmt.Errorf("unexpected status code %d", resp.StatusCode)
-	}
-
-	var supervisors map[string]map[string]SupervisorStats
-	if err := json.Unmarshal(body, &supervisors); err != nil {
-		log.Printf("Error unmarshalling JSON response: %v", err)
-		return nil, err
-	}
-
-	return supervisors, nil
-}
-
-func ResetSupervisor(host string, port int, task string) (bool, error) {
-	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/reset", host, port, task)
-
-	req, err := http.NewRequest("POST", url, nil)
-	if err != nil {
-		log.Printf("Error creating POST request: %v", err)
-		return false, err
-	}
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("Error sending POST request: %v", err)
-		return false, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("Error reading response body: %v", err)
-		return false, err
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
-		return false, fmt.Errorf("unexpected status code %d", resp.StatusCode)
-	}
-
-	return true, nil
 }

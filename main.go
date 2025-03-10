@@ -39,7 +39,7 @@ func main() {
 		logger.Log.Fatalf("Error loading configuration: %v", err)
 	}
 
-	router, err := zkclient.GetDruidRouterInfo(cfg.ZookeeperServers)
+	routers, err := zkclient.GetDruidRouterInfo(cfg.ZookeeperServers)
 	if err != nil {
 		logger.Log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
 	}
@@ -64,7 +64,7 @@ func main() {
 			continue
 		}
 
-		supervisorTasks, err := druidrouter.GetSupervisors(router.Address, router.Port)
+		supervisorTasks, err := druidrouter.GetSupervisors(routers)
 		if err != nil {
 			logger.Log.Fatalf("Failed to get supervisor tasks: %v", err)
 		}
@@ -72,11 +72,7 @@ func main() {
 		if !cleaned {
 			logger.Log.Info("Cleaning Supervisors (first time)...")
 			for _, task := range supervisorTasks {
-				err := druidrouter.DeleteTask(router.Address, router.Port, task)
-				if err != nil {
-					logger.Log.Error("Failed to delete task:", task, "Error:", err)
-					continue
-				}
+				druidrouter.DeleteTask(routers, task)
 			}
 			cleaned = true
 		}
@@ -119,7 +115,7 @@ func main() {
 				logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 			}
 
-			druidrouter.SubmitTask(router.Address, router.Port, jsonStr)
+			druidrouter.SubmitTask(routers, jsonStr)
 		}
 
 		time.Sleep(60 * time.Second)

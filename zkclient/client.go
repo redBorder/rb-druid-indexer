@@ -38,7 +38,7 @@ type DruidRouter struct {
 	ServiceType string `json:"serviceType"`
 }
 
-func GetDruidRouterInfo(zookeeperServers []string) (*DruidRouter, error) {
+func GetDruidRouterInfo(zookeeperServers []string) ([]DruidRouter, error) {
 	conn, _, err := zk.Connect(zookeeperServers, time.Second*5)
 	if err != nil {
 		return nil, err
@@ -55,17 +55,28 @@ func GetDruidRouterInfo(zookeeperServers []string) (*DruidRouter, error) {
 		return nil, fmt.Errorf("no routers found in Zookeeper")
 	}
 
-	routerNode := druidRouterPath + "/" + children[0]
-	data, _, err := conn.Get(routerNode)
-	if err != nil {
-		return nil, err
+	var routers []DruidRouter
+	for _, child := range children {
+		routerNode := druidRouterPath + "/" + child
+		data, _, err := conn.Get(routerNode)
+		if err != nil {
+			logger.Log.Errorf("failed to get data for node %s: %v", routerNode, err)
+			continue
+		}
+
+		var routerInfo DruidRouter
+		err = json.Unmarshal(data, &routerInfo)
+		if err != nil {
+			logger.Log.Errorf("failed to unmarshal data for node %s: %v", routerNode, err)
+			continue
+		}
+
+		routers = append(routers, routerInfo)
 	}
 
-	var routerInfo DruidRouter
-	err = json.Unmarshal(data, &routerInfo)
-	if err != nil {
-		return nil, err
+	if len(routers) == 0 {
+		return nil, fmt.Errorf("failed to retrieve any valid router information")
 	}
 
-	return &routerInfo, nil
+	return routers, nil
 }
