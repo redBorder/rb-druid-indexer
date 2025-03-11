@@ -20,11 +20,20 @@ import druidrouter "rb-druid-indexer/druid"
 
 var ScannerMetrics = []druidrouter.Metrics{
 	{Type: "count", Name: "events"},
-	{Type: "doubleSum", Name: "sum_value", FieldName: "value"},
-	{Type: "doubleMax", Name: "max_value", FieldName: "value"},
-	{Type: "doubleMin", Name: "min_value", FieldName: "value"},
 }
 
-var ScannerDimensions = []string{}
+var ScannerDimensionsExclusions = []string{}
 
-const ScannerDataSource = "rb_monitor"
+var ScannerDimensions = []string{
+	"pri", "pri_text", "syslogfacility", "syslogfacility_text", "syslogseverity", "syslogseverity_text",
+	"hostname", "fromhost_ip", "app_name", "sensor_name", "proxy_uuid", "message", "status",
+	"category", "source", "target", "sensor_uuid", "service_provider", "service_provider_uuid",
+	"namespace", "namespace_uuid", "deployment", "deployment_uuid", "market", "market_uuid",
+	"organization", "organization_uuid", "campus", "campus_uuid", "building", "building_uuid",
+	"floor", "floor_uuid", "ipaddress", "scan_id", "scan_subtype", "scan_type", "result_data",
+	"result", "cve_info", "vendor", "product", "version", "servicename", "protocol", "cpe",
+	"cve", "port", "metric", "severity", "score", "mac", "subnet", "path", "layer", "ipv4",
+	"port_state",
+}
+
+const ScannerDataSource = "rb_scanner"

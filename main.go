@@ -102,13 +102,16 @@ func main() {
 				logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
 			}
 
+			mergedDimensions := append(config.Dimensions, taskConfig.CustomDimensions...)
+
 			jsonStr, err := druidrouter.GenerateConfig(
 				taskConfig.TaskName,
 				taskConfig.KafkaHost,
 				taskConfig.Feed,
 				"timestamp",
 				"ruby",
-				config.Dimensions,
+				config.DimensionsExclusions,
+				mergedDimensions,
 				config.Metrics,
 			)
 			if err != nil {

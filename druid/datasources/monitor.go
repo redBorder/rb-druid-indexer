@@ -25,6 +25,10 @@ var MonitorMetrics = []druidrouter.Metrics{
 	{Type: "doubleMin", Name: "min_value", FieldName: "value"},
 }
 
+var MonitorDimensionsExclusions = []string{
+	"unit", "type", "value",
+}
+
 var MonitorDimensions = []string{}
 
 const MonitorDataSource = "rb_monitor"

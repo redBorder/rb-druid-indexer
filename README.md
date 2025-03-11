@@ -63,6 +63,9 @@ tasks:
     feed: "rb_monitor_12345" # Kafka topic
     spec: "rb_monitor"
     kafka_host: "kafka.service:9092"
+	custom_dimensions:
+      - "http_url"
+      - "new_field"
   - task_name: "rb_flow"
     feed: "rb_flow"
     feed: "rb_flow_post"
@@ -105,6 +108,13 @@ tasks:
 - **Example**: 
     - `"kafka.service:9092"`
 
+### custom_dimensions
+- **Description**: List of dimensions to append to orginal existing dimensions
+- **Type**: Array of strings.
+- **Example**: 
+    - `"http_url"`
+	- `"dst_port_as_uint64"`
+	
 Every dataSource is managed in `/druid/datasources/${datasource}.go` for example
 
 ```go
@@ -154,11 +164,13 @@ var Configs = map[string]DataSourceConfig{
 		DataSource: FlowDataSource,
 		Metrics:    FlowMetrics,
 		Dimensions: FlowDimensions,
+		DimensionsExclusions: FlowDimensionsExclusions
 	},
 	"rb_monitor": {
 		DataSource: MonitorDataSource,
 		Metrics:    MonitorMetrics,
 		Dimensions: MonitorDimensions,
+		DimensionsExclusions: MonitorDimensionsExclusions
 	},
 }
 ```

@@ -25,6 +25,8 @@ var WirelessMetrics = []druidrouter.Metrics{
 	{Type: "longSum", Name: "sum_wireless_tx_power", FieldName: "wireless_tx_power"},
 }
 
+var WirelessDimensionsExclusions = []string{}
+
 var WirelessDimensions = []string{
 	"wireless_station", "type", "wireless_channel", "wireless_tx_power",
 	"wireless_admin_state", "wireless_op_state", "wireless_mode", "wireless_slot",

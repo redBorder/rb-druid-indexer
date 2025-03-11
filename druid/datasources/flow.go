@@ -28,6 +28,10 @@ var FlowMetrics = []druidrouter.Metrics{
 	{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 }
 
+var FlowDimensionsExclusions = []string{
+	"bytes", "pkts", "flow_end_reason", "first_switched", "wan_ip_name",
+}
+
 var FlowDimensions = []string{
 	"application_id_name", "building", "building_uuid", "campus", "campus_uuid",
 	"client_accounting_type", "client_auth_type", "client_fullname", "client_gender",

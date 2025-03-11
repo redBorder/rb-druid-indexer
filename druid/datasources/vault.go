@@ -20,20 +20,20 @@ import druidrouter "rb-druid-indexer/druid"
 
 var VaultMetrics = []druidrouter.Metrics{
 	{Type: "count", Name: "events"},
-	{Type: "doubleSum", Name: "sum_value", FieldName: "value"},
-	{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-	{Type: "hyperUnique", Name: "wireless_channels", FieldName: "wireless_channel"},
-	{Type: "longSum", Name: "sum_wireless_tx_power", FieldName: "wireless_tx_power"},
+}
+
+var VaultDimensionsExclusions = []string{
+	"unit", "type", "valur",
 }
 
 var VaultDimensions = []string{
-	"wireless_station", "type", "wireless_channel", "wireless_tx_power",
-	"wireless_admin_state", "wireless_op_state", "wireless_mode", "wireless_slot",
-	"sensor_name", "sensor_uuid", "deployment", "deployment_uuid", "namespace", "namespace_uuid",
-	"organization", "organization_uuid", "market", "market_uuid", "floor", "floor_uuid",
-	"zone", "zone_uuid", "building", "building_uuid", "campus", "campus_uuid",
-	"service_provider", "service_provider_uuid", "wireless_station_ip", "status",
-	"wireless_station_name", "client_count",
+	"pri", "pri_text", "syslogfacility", "syslogfacility_text", "syslogseverity", "syslogseverity_text",
+	"hostname", "fromhost_ip", "app_name", "sensor_name", "proxy_uuid", "message", "status",
+	"category", "source", "target", "sensor_uuid", "service_provider", "service_provider_uuid",
+	"namespace", "namespace_uuid", "deployment", "deployment_uuid", "market", "market_uuid",
+	"organization", "organization_uuid", "campus", "campus_uuid", "building", "building_uuid",
+	"floor", "floor_uuid", "action", "incident_uuid", "alarm_id", "alarm_name", "alarm_product_type",
+	"alarm_condition", "alarm_user", "alarm_severity",
 }
 
 const VaultDataSource = "rb_vault"

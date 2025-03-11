@@ -25,6 +25,8 @@ var LocationMetrics = []druidrouter.Metrics{
 	{Type: "hyperUnique", Name: "unique_locations", FieldName: "location_id"},
 }
 
+var LocationDimensionsExclusions = []string{}
+
 var LocationDimensions = []string{
 	"location_id", "latitude", "longitude", "address", "city", "region",
 	"country", "postal_code", "sensor_name", "sensor_uuid", "deployment",

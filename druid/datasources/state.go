@@ -20,17 +20,19 @@ import druidrouter "rb-druid-indexer/druid"
 
 var StateMetrics = []druidrouter.Metrics{
 	{Type: "count", Name: "events"},
-	{Type: "doubleSum", Name: "sum_value", FieldName: "value"},
-	{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-	{Type: "hyperUnique", Name: "wireless_channels", FieldName: "wireless_channel"},
-	{Type: "longSum", Name: "sum_wireless_tx_power", FieldName: "wireless_tx_power"},
+	{Type: "doubleSum", FieldName: "value", Name: "sum_value"},
+	{Type: "hyperUnique", FieldName: "wireless_station", Name: "wireless_stations"},
+	{Type: "hyperUnique", FieldName: "wireless_channel", Name: "wireless_channels"},
+	{Type: "longSum", FieldName: "wireless_tx_power", Name: "sum_wireless_tx_power"},
 }
+
+var StateDimensionsExclusions = []string{}
 
 var StateDimensions = []string{
 	"wireless_station", "type", "wireless_channel", "wireless_tx_power",
 	"wireless_admin_state", "wireless_op_state", "wireless_mode", "wireless_slot",
 	"sensor_name", "sensor_uuid", "deployment", "deployment_uuid", "namespace", "namespace_uuid",
-	"organization", "organization_uuid", "market", "market_uuid", "floor", "floor_uuid",
+	"organizaton", "organization_uuid", "market", "market_uuid", "floor", "floor_uuid",
 	"zone", "zone_uuid", "building", "building_uuid", "campus", "campus_uuid",
 	"service_provider", "service_provider_uuid", "wireless_station_ip", "status",
 	"wireless_station_name", "client_count",

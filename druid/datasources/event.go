@@ -24,6 +24,10 @@ var EventMetrics = []druidrouter.Metrics{
 	{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 }
 
+var EventDimensionsExclusions = []string{
+	"payload",
+}
+
 var EventDimensions = []string{
 	"src", "src_is_malicious", "dst", "dst_is_malicious", "sensor_uuid", "src_port",
 	"dst_port", "src_as_name", "src_country_code", "dst_map", "src_map", "service_provider",

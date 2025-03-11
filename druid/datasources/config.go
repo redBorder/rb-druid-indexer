@@ -19,51 +19,60 @@ package datasources
 import druidrouter "rb-druid-indexer/druid"
 
 type DataSourceConfig struct {
-	DataSource string
-	Metrics    []druidrouter.Metrics
-	Dimensions []string
+	DataSource           string
+	Metrics              []druidrouter.Metrics
+	Dimensions           []string
+	DimensionsExclusions []string
 }
 
 var Configs = map[string]DataSourceConfig{
 	"rb_flow": {
-		DataSource: FlowDataSource,
-		Metrics:    FlowMetrics,
-		Dimensions: FlowDimensions,
+		DataSource:           FlowDataSource,
+		Metrics:              FlowMetrics,
+		Dimensions:           FlowDimensions,
+		DimensionsExclusions: FlowDimensionsExclusions,
 	},
 	"rb_monitor": {
-		DataSource: MonitorDataSource,
-		Metrics:    MonitorMetrics,
-		Dimensions: MonitorDimensions,
+		DataSource:           MonitorDataSource,
+		Metrics:              MonitorMetrics,
+		Dimensions:           MonitorDimensions,
+		DimensionsExclusions: MonitorDimensionsExclusions,
 	},
 	"rb_wireless": {
-		DataSource: WirelessDataSource,
-		Metrics:    WirelessMetrics,
-		Dimensions: WirelessDimensions,
+		DataSource:           WirelessDataSource,
+		Metrics:              WirelessMetrics,
+		Dimensions:           WirelessDimensions,
+		DimensionsExclusions: WirelessDimensionsExclusions,
 	},
 	"rb_location": {
-		DataSource: LocationDataSource,
-		Metrics:    LocationMetrics,
-		Dimensions: LocationDimensions,
+		DataSource:           LocationDataSource,
+		Metrics:              LocationMetrics,
+		Dimensions:           LocationDimensions,
+		DimensionsExclusions: LocationDimensionsExclusions,
 	},
 	"rb_event": {
-		DataSource: EventDataSource,
-		Metrics:    EventMetrics,
-		Dimensions: EventDimensions,
+		DataSource:           EventDataSource,
+		Metrics:              EventMetrics,
+		Dimensions:           EventDimensions,
+		DimensionsExclusions: EventDimensionsExclusions,
 	},
 	"rb_state": {
-		DataSource: StateDataSource,
-		Metrics:    StateMetrics,
-		Dimensions: StateDimensions,
+		DataSource:           StateDataSource,
+		Metrics:              StateMetrics,
+		Dimensions:           StateDimensions,
+		DimensionsExclusions: StateDimensionsExclusions,
 	},
 	"rb_vault": {
-		DataSource: VaultDataSource,
-		Metrics:    VaultMetrics,
-		Dimensions: VaultDimensions,
+		DataSource:           VaultDataSource,
+		Metrics:              VaultMetrics,
+		Dimensions:           VaultDimensions,
+		DimensionsExclusions: VaultDimensionsExclusions,
 	},
 	"rb_scanner": {
-		DataSource: ScannerDataSource,
-		Metrics:    ScannerMetrics,
-		Dimensions: ScannerDimensions,
+		DataSource:           ScannerDataSource,
+		Metrics:              ScannerMetrics,
+		Dimensions:           ScannerDimensions,
+		DimensionsExclusions: ScannerDimensionsExclusions,
 	},
 }
 
