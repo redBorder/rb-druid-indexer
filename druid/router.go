@@ -27,41 +27,6 @@ import (
 	"time"
 )
 
-type BuildSegmentsStats struct {
-	Processed          float64 `json:"processed"`
-	ProcessedBytes     float64 `json:"processedBytes"`
-	Unparseable        float64 `json:"unparseable"`
-	ThrownAway         float64 `json:"thrownAway"`
-	ProcessedWithError float64 `json:"processedWithError"`
-}
-
-type BuildSegments struct {
-	FiveM    BuildSegmentsStats `json:"5m"`
-	FifteenM BuildSegmentsStats `json:"15m"`
-	OneM     BuildSegmentsStats `json:"1m"`
-}
-
-type MovingAverages struct {
-	BuildSegments BuildSegments `json:"buildSegments"`
-}
-
-type TotalsBuildSegments struct {
-	Processed          int     `json:"processed"`
-	ProcessedBytes     float64 `json:"processedBytes"`
-	ProcessedWithError int     `json:"processedWithError"`
-	ThrownAway         int     `json:"thrownAway"`
-	Unparseable        int     `json:"unparseable"`
-}
-
-type Totals struct {
-	BuildSegments TotalsBuildSegments `json:"buildSegments"`
-}
-
-type SupervisorStats struct {
-	MovingAverages MovingAverages `json:"movingAverages"`
-	Totals         Totals         `json:"totals"`
-}
-
 func GetSupervisors(routers []zkclient.DruidRouter) ([]string, error) {
 	var allSupervisors []string
 
