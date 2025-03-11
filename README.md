@@ -114,7 +114,7 @@ tasks:
 - **Example**: 
     - `"http_url"`
 	- `"dst_port_as_uint64"`
-	
+
 Every dataSource is managed in `/druid/datasources/${datasource}.go` for example
 
 ```go
@@ -130,6 +130,10 @@ var FlowMetrics = []druidrouter.Metrics{
 	{Type: "hyperUnique", Name: "clients", FieldName: "client_mac"},
 	{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
 	{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
+}
+
+var FlowDimensionsExclusions = []string{
+	"bytes", "pkts", "flow_end_reason", "first_switched", "wan_ip_name",
 }
 
 var FlowDimensions = []string{
