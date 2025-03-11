@@ -39,11 +39,6 @@ func main() {
 		logger.Log.Fatalf("Error loading configuration: %v", err)
 	}
 
-	routers, err := zkclient.GetDruidRouterInfo(cfg.ZookeeperServers)
-	if err != nil {
-		logger.Log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
-	}
-
 	zk, err := zkclient.NewZKClient(cfg.ZookeeperServers)
 	if err != nil {
 		logger.Log.Fatalf("Error connecting to ZooKeeper: %v", err)
@@ -62,6 +57,11 @@ func main() {
 			logger.Log.Info("I am not the leader. Waiting...")
 			time.Sleep(60 * time.Second)
 			continue
+		}
+
+		routers, err := zkclient.GetDruidRouterInfo(cfg.ZookeeperServers)
+		if err != nil {
+			logger.Log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
 		}
 
 		supervisorTasks, err := druidrouter.GetSupervisors(routers)
