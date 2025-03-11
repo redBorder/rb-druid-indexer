@@ -34,6 +34,12 @@ getent passwd rb-druid-indexer >/dev/null || useradd -r -g rb-druid-indexer -d /
 %post
 systemctl daemon-reload
 
+%postun
+# Remove config file if it exists to trigger chef to reload service
+if [ -f /etc/rb-druid-indexer/config.yml ]; then
+    rm -f /etc/rb-druid-indexer/config.yml
+fi
+
 %files
 %defattr(755,root,root)
 /usr/bin/rb-druid-indexer
