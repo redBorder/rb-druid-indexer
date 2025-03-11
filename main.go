@@ -110,8 +110,8 @@ func main() {
 				taskConfig.Feed,
 				"timestamp",
 				"ruby",
-				config.DimensionsExclusions,
 				mergedDimensions,
+				config.DimensionsExclusions,
 				config.Metrics,
 			)
 			if err != nil {
