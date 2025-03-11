@@ -63,7 +63,7 @@ tasks:
     feed: "rb_monitor_12345" # Kafka topic
     spec: "rb_monitor"
     kafka_host: "kafka.service:9092"
-	custom_dimensions:
+    custom_dimensions:
       - "http_url"
       - "new_field"
   - task_name: "rb_flow"
