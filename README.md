@@ -67,7 +67,7 @@ tasks:
       - "http_url"
       - "new_field"
   - task_name: "rb_flow"
-    feed: "rb_flow"
+    spec: "rb_flow"
     feed: "rb_flow_post"
     kafka_host: "kafka.service:9092"
 ```
