@@ -25,15 +25,15 @@ import (
 )
 
 const (
-	KAFKA_HOST     = "kafka.service:9092"
-	ZOOKEEPER_HOST = "zookeeper.service:2181"
+	DEFAULT_KAFKA_BROKERS = "kafka.service:9092"
+	ZOOKEEPER_HOST        = "zookeeper.service:2181"
 )
 
 type TaskConfig struct {
 	TaskName         string   `yaml:"task_name"`
 	Feed             string   `yaml:"feed"`
 	Spec             string   `yaml:"spec"`
-	KafkaHost        string   `yaml:"kafka_host"`
+	KafkaBrokers     []string `yaml:"kafka_brokers"`
 	CustomDimensions []string `yaml:"custom_dimensions"`
 }
 
@@ -69,8 +69,8 @@ func LoadConfig(filePath string) (*Config, error) {
 	}
 
 	for i, task := range config.Tasks {
-		if task.KafkaHost == "" {
-			config.Tasks[i].KafkaHost = KAFKA_HOST
+		if len(task.KafkaBrokers) == 0 {
+			config.Tasks[i].KafkaBrokers = []string{DEFAULT_KAFKA_BROKERS}
 		}
 		if task.CustomDimensions == nil {
 			config.Tasks[i].CustomDimensions = []string{}

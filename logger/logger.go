@@ -27,11 +27,11 @@ var Log *logrus.Logger
 
 func ensureLogFileExists(filename string) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-		if err != nil {
+		if f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644); err == nil {
+			f.Close()
+		} else {
 			logrus.Fatalf("Failed to create log file %s: %v", filename, err)
 		}
-		f.Close()
 	}
 }
 
@@ -40,35 +40,22 @@ func InitLogger() {
 	Log.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 	Log.SetLevel(logrus.DebugLevel)
 
-	ensureLogFileExists("/var/log/rb-druid-indexer/info.log")
-	ensureLogFileExists("/var/log/rb-druid-indexer/error.log")
-	ensureLogFileExists("/var/log/rb-druid-indexer/debug.log")
-
-	infoLog := &lumberjack.Logger{
-		Filename:   "/var/log/rb-druid-indexer/info.log",
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     30,
-		Compress:   true,
-	}
-	errorLog := &lumberjack.Logger{
-		Filename:   "/var/log/rb-druid-indexer/error.log",
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     30,
-		Compress:   true,
-	}
-	debugLog := &lumberjack.Logger{
-		Filename:   "/var/log/rb-druid-indexer/debug.log",
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     30,
-		Compress:   true,
+	logFiles := map[string][]logrus.Level{
+		"/var/log/rb-druid-indexer/info.log":  {logrus.InfoLevel, logrus.WarnLevel},
+		"/var/log/rb-druid-indexer/error.log": {logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel},
+		"/var/log/rb-druid-indexer/debug.log": {logrus.DebugLevel},
 	}
 
-	Log.AddHook(NewLogFileHook(infoLog, logrus.InfoLevel, logrus.WarnLevel))
-	Log.AddHook(NewLogFileHook(errorLog, logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel))
-	Log.AddHook(NewLogFileHook(debugLog, logrus.DebugLevel))
+	for file, levels := range logFiles {
+		ensureLogFileExists(file)
+		Log.AddHook(NewLogFileHook(&lumberjack.Logger{
+			Filename:   file,
+			MaxSize:    10,
+			MaxBackups: 5,
+			MaxAge:     30,
+			Compress:   true,
+		}, levels...))
+	}
 
 	Log.SetOutput(os.Stdout)
 }

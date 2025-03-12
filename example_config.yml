@@ -1,36 +1,53 @@
 zookeeper_servers:
-  - "zookeeper.service:2181"
+  - "zookeeper1.service:2181"
+  - "zookeeper2.service:2181"
 
 tasks:
   - task_name: "rb_monitor"
     feed: "rb_monitor"
     spec: "rb_monitor"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_state"
     feed: "rb_state_post"
     spec: "rb_state"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_flow"
     feed: "rb_flow_post"
     spec: "rb_flow"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_event"
     feed: "rb_event_post"
     spec: "rb_event"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_vault"
     feed: "rb_vault_post"
     spec: "rb_vault"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_scanner"
     feed: "rb_scanner_post"
     spec: "rb_scanner"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_location"
     feed: "rb_loc_post"
     spec: "rb_location"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
   - task_name: "rb_wireless"
     feed: "rb_wireless"
     spec: "rb_wireless"
-    kafka_host: "kafka.service:9092"
+    kafka_brokers:
+      - "kafka1.service:9092"
+      - "kafka2.service:9093"
