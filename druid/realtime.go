@@ -76,7 +76,15 @@ type TuningConfig struct {
 	Type string `json:"type"`
 }
 
-func GenerateConfig(dataSource, kafkaHost, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
+func GenerateConfig(dataSource, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
+	brokerList := strings.Join(func() []string {
+		var brokers []string
+		for _, broker := range KafkaBrokers {
+			brokers = append(brokers, broker)
+		}
+		return brokers
+	}(), ",")
+
 	config := KafkaConfiguration{
 		Type: "kafka",
 		Spec: KafkaSpec{
@@ -100,7 +108,7 @@ func GenerateConfig(dataSource, kafkaHost, kafkaTopic, timestampColumn, timestam
 			IOConfig: IOConfig{
 				Type: "kafka",
 				ConsumerProperties: map[string]string{
-					"bootstrap.servers": kafkaHost,
+					"bootstrap.servers": brokerList,
 				},
 				Topic: kafkaTopic,
 				InputFormat: InputFormat{

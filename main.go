@@ -106,7 +106,7 @@ func main() {
 
 			jsonStr, err := druidrouter.GenerateConfig(
 				taskConfig.TaskName,
-				taskConfig.KafkaHost,
+				taskConfig.KafkaBrokers,
 				taskConfig.Feed,
 				"timestamp",
 				"ruby",
