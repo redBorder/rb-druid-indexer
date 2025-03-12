@@ -43,13 +43,13 @@
 
 ##  How rb-druid-indexer fits in our new indexing system or yours
 <p align="center">
-    <img src="./assets/arch.png" align="center" width="80%">
+    <img src="./assets/arch.png" align="center" width="120%">
 </p>
 In the old system, Druid indexing relied on ShardSpec with druid-realtime, where tasks were split into multiple shards across nodes for parallel processing. This approach, defined in static realtime spec files & hard-to-deploy nodes introduced complexity in shard management and scalability. In contrast, the new system uses the rb-druid-indexer, which simplifies the process by submitting single tasks without shard splitting to druid router wich automatically distribute task in druid indexer nodes and we leave overlord to manage balancing.
 
 You can notice this fast with this diagram
 <p align="center">
-    <img src="./assets/old_vs_new.png" align="center" width="80%">
+    <img src="./assets/old_vs_new.png" align="center" width="120%">
 </p>
 
 
