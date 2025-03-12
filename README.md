@@ -68,20 +68,67 @@ The configuration for `rb-druid-indexer` is defined in a YAML file and includes 
 
 ```yaml
 zookeeper_servers:
-  - "127.0.0.1:2181"
+  - "rb-malvarez1.node:2181"
+  - "rb-malvarez3.node:2181"
+  - "rb-malvarez2.node:2181"
 
 tasks:
   - task_name: "rb_monitor"
-    feed: "rb_monitor_12345" # Kafka topic
+    feed: "rb_monitor"
     spec: "rb_monitor"
-    kafka_host: "kafka.service:9092"
-    custom_dimensions:
-      - "http_url"
-      - "new_field"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_state"
+    feed: "rb_state_post"
+    spec: "rb_state"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
   - task_name: "rb_flow"
-    spec: "rb_flow"
     feed: "rb_flow_post"
-    kafka_host: "kafka.service:9092"
+    spec: "rb_flow"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_event"
+    feed: "rb_event_post"
+    spec: "rb_event"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_vault"
+    feed: "rb_vault_post"
+    spec: "rb_vault"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_scanner"
+    feed: "rb_scanner_post"
+    spec: "rb_scanner"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_location"
+    feed: "rb_loc_post"
+    spec: "rb_location"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
+  - task_name: "rb_wireless"
+    feed: "rb_wireless"
+    spec: "rb_wireless"
+    kafka_brokers:
+      - "rb-malvarez1.node:9092"
+      - "rb-malvarez3.node:9092"
+      - "rb-malvarez2.node:9092"
 ```
 
 
@@ -114,11 +161,12 @@ tasks:
     - `"rb_monitor"`
     - `"rb_flow_post"`
 
-### kafka_host
-- **Description**: The host and port for the Kafka service where the feed is being published.
-- **Type**: String.
+### kafka_brokers
+- **Description**: The list of kafka brokers for supervisor
+- **Type**: Array.
 - **Example**: 
     - `"kafka.service:9092"`
+    - `"kafka2.service:9092"`
 
 ### custom_dimensions
 - **Description**: List of dimensions to append to orginal existing dimensions
