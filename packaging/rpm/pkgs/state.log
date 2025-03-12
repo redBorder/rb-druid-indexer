@@ -1,0 +1,95 @@
+2025-03-12 18:27:31,875 - Mock Version: 5.9
+2025-03-12 18:27:31,879 - Start(bootstrap): chroot init
+2025-03-12 18:27:31,887 - Start(bootstrap): cleaning package manager metadata
+2025-03-12 18:27:31,894 - Finish(bootstrap): cleaning package manager metadata
+2025-03-12 18:27:32,086 - Finish(bootstrap): chroot init
+2025-03-12 18:27:32,088 - Start: chroot init
+2025-03-12 18:27:32,096 - Start: cleaning package manager metadata
+2025-03-12 18:27:32,117 - Finish: cleaning package manager metadata
+2025-03-12 18:27:32,293 - Start: installing minimal buildroot with dnf
+2025-03-12 18:27:55,983 - Finish: installing minimal buildroot with dnf
+2025-03-12 18:27:56,066 - Start: creating root cache
+2025-03-12 18:27:59,829 - Finish: creating root cache
+2025-03-12 18:27:59,830 - Finish: chroot init
+2025-03-12 18:27:59,894 - Start: buildsrpm
+2025-03-12 18:27:59,897 - Start: rpmbuild -bs
+2025-03-12 18:27:59,925 - Finish: rpmbuild -bs
+2025-03-12 18:27:59,926 - Finish: buildsrpm
+2025-03-12 18:27:59,927 - Start: clean chroot
+2025-03-12 18:28:00,894 - Finish: clean chroot
+2025-03-12 18:31:29,057 - Mock Version: 5.9
+2025-03-12 18:31:29,060 - Start(bootstrap): chroot init
+2025-03-12 18:31:29,068 - Start(bootstrap): cleaning package manager metadata
+2025-03-12 18:31:29,071 - Finish(bootstrap): cleaning package manager metadata
+2025-03-12 18:31:29,251 - Finish(bootstrap): chroot init
+2025-03-12 18:31:29,252 - Start: chroot init
+2025-03-12 18:31:29,261 - Start: cleaning package manager metadata
+2025-03-12 18:31:29,280 - Finish: cleaning package manager metadata
+2025-03-12 18:31:29,458 - Start: installing minimal buildroot with dnf
+2025-03-12 18:31:38,273 - Finish: installing minimal buildroot with dnf
+2025-03-12 18:31:38,345 - Start: creating root cache
+2025-03-12 18:31:42,160 - Finish: creating root cache
+2025-03-12 18:31:42,161 - Finish: chroot init
+2025-03-12 18:31:42,227 - Start: buildsrpm
+2025-03-12 18:31:42,231 - Start: rpmbuild -bs
+2025-03-12 18:31:42,259 - Finish: rpmbuild -bs
+2025-03-12 18:31:42,260 - Finish: buildsrpm
+2025-03-12 18:31:42,261 - Start: clean chroot
+2025-03-12 18:31:43,226 - Finish: clean chroot
+2025-03-12 18:34:27,591 - Mock Version: 5.9
+2025-03-12 18:34:27,595 - Start(bootstrap): chroot init
+2025-03-12 18:34:27,603 - Start(bootstrap): cleaning package manager metadata
+2025-03-12 18:34:27,609 - Finish(bootstrap): cleaning package manager metadata
+2025-03-12 18:34:27,799 - Finish(bootstrap): chroot init
+2025-03-12 18:34:27,800 - Start: chroot init
+2025-03-12 18:34:27,809 - Start: cleaning package manager metadata
+2025-03-12 18:34:27,829 - Finish: cleaning package manager metadata
+2025-03-12 18:34:28,009 - Start: installing minimal buildroot with dnf
+2025-03-12 18:34:38,125 - Finish: installing minimal buildroot with dnf
+2025-03-12 18:34:38,212 - Start: creating root cache
+2025-03-12 18:34:42,114 - Finish: creating root cache
+2025-03-12 18:34:42,115 - Finish: chroot init
+2025-03-12 18:34:42,183 - Start: buildsrpm
+2025-03-12 18:34:42,188 - Start: rpmbuild -bs
+2025-03-12 18:34:42,218 - Finish: rpmbuild -bs
+2025-03-12 18:34:42,219 - Finish: buildsrpm
+2025-03-12 18:34:42,220 - Start: clean chroot
+2025-03-12 18:34:43,216 - Finish: clean chroot
+2025-03-12 18:37:58,415 - Mock Version: 5.9
+2025-03-12 18:37:58,419 - Start(bootstrap): chroot init
+2025-03-12 18:37:58,427 - Start(bootstrap): cleaning package manager metadata
+2025-03-12 18:37:58,431 - Finish(bootstrap): cleaning package manager metadata
+2025-03-12 18:37:58,624 - Finish(bootstrap): chroot init
+2025-03-12 18:37:58,626 - Start: chroot init
+2025-03-12 18:37:58,637 - Start: cleaning package manager metadata
+2025-03-12 18:37:58,660 - Finish: cleaning package manager metadata
+2025-03-12 18:37:58,846 - Start: installing minimal buildroot with dnf
+2025-03-12 18:38:10,192 - Finish: installing minimal buildroot with dnf
+2025-03-12 18:38:10,270 - Start: creating root cache
+2025-03-12 18:38:14,058 - Finish: creating root cache
+2025-03-12 18:38:14,059 - Finish: chroot init
+2025-03-12 18:38:14,123 - Start: buildsrpm
+2025-03-12 18:38:14,134 - Start: rpmbuild -bs
+2025-03-12 18:38:14,162 - Finish: rpmbuild -bs
+2025-03-12 18:38:14,163 - Finish: buildsrpm
+2025-03-12 18:38:14,163 - Start: clean chroot
+2025-03-12 18:38:15,104 - Finish: clean chroot
+2025-03-12 18:39:08,215 - Mock Version: 5.9
+2025-03-12 18:39:08,219 - Start(bootstrap): chroot init
+2025-03-12 18:39:08,227 - Start(bootstrap): cleaning package manager metadata
+2025-03-12 18:39:08,231 - Finish(bootstrap): cleaning package manager metadata
+2025-03-12 18:39:08,419 - Finish(bootstrap): chroot init
+2025-03-12 18:39:08,421 - Start: chroot init
+2025-03-12 18:39:08,430 - Start: cleaning package manager metadata
+2025-03-12 18:39:08,450 - Finish: cleaning package manager metadata
+2025-03-12 18:39:08,625 - Start: installing minimal buildroot with dnf
+2025-03-12 18:39:16,281 - Finish: installing minimal buildroot with dnf
+2025-03-12 18:39:16,354 - Start: creating root cache
+2025-03-12 18:39:20,116 - Finish: creating root cache
+2025-03-12 18:39:20,116 - Finish: chroot init
+2025-03-12 18:39:20,181 - Start: buildsrpm
+2025-03-12 18:39:20,193 - Start: rpmbuild -bs
+2025-03-12 18:39:20,221 - Finish: rpmbuild -bs
+2025-03-12 18:39:20,222 - Finish: buildsrpm
+2025-03-12 18:39:20,222 - Start: clean chroot
+2025-03-12 18:39:21,193 - Finish: clean chroot
