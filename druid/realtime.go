@@ -18,6 +18,7 @@ package druidrouter
 
 import (
 	"encoding/json"
+	"strings"
 )
 
 type KafkaConfiguration struct {
@@ -77,14 +78,6 @@ type TuningConfig struct {
 }
 
 func GenerateConfig(dataSource, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
-	brokerList := strings.Join(func() []string {
-		var brokers []string
-		for _, broker := range KafkaBrokers {
-			brokers = append(brokers, broker)
-		}
-		return brokers
-	}(), ",")
-
 	config := KafkaConfiguration{
 		Type: "kafka",
 		Spec: KafkaSpec{
@@ -108,7 +101,7 @@ func GenerateConfig(dataSource, KafkaBrokers []string, kafkaTopic, timestampColu
 			IOConfig: IOConfig{
 				Type: "kafka",
 				ConsumerProperties: map[string]string{
-					"bootstrap.servers": brokerList,
+					"bootstrap.servers": strings.Join(KafkaBrokers, ","),
 				},
 				Topic: kafkaTopic,
 				InputFormat: InputFormat{
