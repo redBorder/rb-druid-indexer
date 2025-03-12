@@ -152,7 +152,7 @@ tasks:
 - **Description**: The spec file name associated with the task (for realtime configuration)
 - **Type**: String.
 - **Example**: 
-    - `""` (empty)
+    - `"rb_flow"`
 
 ### feed
 - **Description**: The name of the Kafka feed associated with the task. This specifies which feed to listen to.
@@ -165,8 +165,9 @@ tasks:
 - **Description**: The list of kafka brokers for supervisor
 - **Type**: Array.
 - **Example**: 
-    - `"kafka.service:9092"`
-    - `"kafka2.service:9092"`
+    kafka_brokers:
+      - `"kafka.service:9092"`
+      - `"kafka2.service:9092"`
 
 ### custom_dimensions
 - **Description**: List of dimensions to append to orginal existing dimensions
