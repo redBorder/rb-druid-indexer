@@ -77,7 +77,7 @@ type TuningConfig struct {
 	Type string `json:"type"`
 }
 
-func GenerateConfig(dataSource, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
+func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
 	config := KafkaConfiguration{
 		Type: "kafka",
 		Spec: KafkaSpec{
