@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"rb-druid-indexer/logger"
-	"time"
 
 	"github.com/samuel/go-zookeeper/zk"
 )
@@ -38,12 +37,10 @@ type DruidRouter struct {
 	ServiceType string `json:"serviceType"`
 }
 
-func GetDruidRouterInfo(zookeeperServers []string) ([]DruidRouter, error) {
-	conn, _, err := zk.Connect(zookeeperServers, time.Second*5)
-	if err != nil {
-		return nil, err
+func GetDruidRouterInfo(conn *zk.Conn) ([]DruidRouter, error) {
+	if conn == nil {
+		return nil, fmt.Errorf("Zookeeper connection is nil")
 	}
-	defer conn.Close()
 
 	children, _, err := conn.Children(druidRouterPath)
 	if err != nil {

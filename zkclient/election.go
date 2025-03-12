@@ -43,6 +43,18 @@ func NewZKClient(zookeeperServers []string) (*ZKClient, error) {
 	return &ZKClient{conn: conn}, nil
 }
 
+func (z *ZKClient) GetConn() *zk.Conn {
+	return z.conn
+}
+
+func IsZKAlive(conn *zk.Conn) bool {
+	if conn == nil {
+		return false
+	}
+	state := conn.State()
+	return state == zk.StateConnected || state == zk.StateHasSession
+}
+
 func (zkClient *ZKClient) CreateLeaderNode() (string, error) {
 	exists, _, err := zkClient.conn.Exists(LEADER_ELECTION_PATH)
 	if err != nil {
