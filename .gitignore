@@ -8,6 +8,9 @@
 *.so
 *.dylib
 
+# Ignore pkgs folder
+packaging/rpm/pkgs/
+
 # Test binary, built with `go test -c`
 *.test
 
