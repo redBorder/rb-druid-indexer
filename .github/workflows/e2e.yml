@@ -43,7 +43,6 @@ jobs:
 
       - name: Build rb-druid-indexer
         run: |
-          cd ../
           go build -o rb-druid-indexer
           
       - name: Check if rb-druid-indexer binary exists
