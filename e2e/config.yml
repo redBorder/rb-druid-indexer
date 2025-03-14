@@ -1,0 +1,11 @@
+zookeeper_servers:
+  - "localhost:2181"
+
+discovery_path: "/druid/discovery/druid:router"
+
+tasks:
+  - task_name: "rb_flow"
+    feed: "rb_flow_post"
+    spec: "rb_flow"
+    kafka_brokers:
+      - "kafka:9092"

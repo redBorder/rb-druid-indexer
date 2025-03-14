@@ -1,56 +1,89 @@
-name: E2E Testing with Kafka and Druid
+name: Kafka and Druid End-to-End Test
 
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - main
 
 jobs:
-  test:
+  setup-and-test:
     runs-on: ubuntu-latest
+    
     services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        ports:
-          - 2181:2181
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:latest
+      docker:
+        image: docker:19.03.12
+        options: --privileged
         ports:
           - 9092:9092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      druid:
-        image: apache/druid:31.0.1
-        ports:
-          - 8888:8888
-          - 8082:8082
-          - 8090:8090
+          - 2181:2181
+          - 5432:5432
           - 8081:8081
-        env:
-          DRUID_NODE_TYPE: router,broker,overlord,historical,indexer
-          DRUID_HOST: localhost
+          - 8082:8082
+          - 8083:8083
+          - 8888:8888
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Wait for services to be ready
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
         run: |
-          sleep 60
-          nc -zv localhost 2181
-          nc -zv localhost 8888 # Druid Router
-          nc -zv localhost 9092
-          nc -zv localhost 8082
-          nc -zv localhost 8090
-      
-      - name: Run Tests
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Generate docker-compose.yml
         run: |
-          ./run-tests.sh
+          ./e2e/rb_generate_compose.sh > docker-compose.yml
+
+      - name: Start Docker containers
+        run: |
+          docker-compose -f docker-compose.yml up -d
+
+      - name: Build rb-druid-indexer
+        run: |
+          cd ../
+          go build -o rb-druid-indexer
+          
+      - name: Check if rb-druid-indexer binary exists
+        run: |
+          if [ ! -x "./rb-druid-indexer" ]; then
+            echo "Indexer binary does not exist or is not executable!"
+            exit 1
+          fi
+          echo "Indexer binary exists and is executable."
+
+      - name: Create Kafka topics
+        run: |
+          TOPICS=("rb_monitor" "rb_flow_post")
+          PARTITIONS=1
+          REPLICATION_FACTOR=1
+          for TOPIC in "${TOPICS[@]}"; do
+            echo "Creating topic: $TOPIC"
+            docker exec kafka kafka-topics --create --topic "$TOPIC" --bootstrap-server localhost:9092 --partitions $PARTITIONS --replication-factor $REPLICATION_FACTOR
+            if [ $? -eq 0 ]; then
+              echo "Topic '$TOPIC' created successfully!"
+            else
+              echo "Failed to create topic '$TOPIC'."
+            fi
+          done
+
+      - name: Check Kafka topic existence
+        run: |
+          TOPIC="rb_flow_post"
+          docker exec kafka kafka-topics --list --bootstrap-server "127.0.0.1:9092" | grep -q $TOPIC
+          if [ $? -eq 0 ]; then
+            echo "Kafka topic '$TOPIC' exists."
+          else
+            echo "Kafka topic '$TOPIC' does not exist!"
+            exit 1
+          fi
+      - name: Start rb-druid-indexer
+        run: |
+          ./rb-druid-indexer --config ./e2e/config.yml
+          sleep 300
+
+      - name: Stop Docker containers
+        run: |
+          docker-compose -f docker-compose.yml down

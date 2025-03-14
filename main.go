@@ -17,8 +17,8 @@
 package main
 
 import (
-	"os"
 	"flag"
+	"os"
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
 	druiddatasources "rb-druid-indexer/druid/datasources"
@@ -55,7 +55,7 @@ func main() {
 	for {
 		if !zkclient.IsZKAlive(zk.GetConn()) {
 			logger.Log.Warn("Zookeeper connection lost, reconnecting...")
-		
+
 			newZK, err := zkclient.NewZKClient(cfg.ZookeeperServers)
 			if err != nil {
 				logger.Log.Errorf("Failed to reconnect to Zookeeper: %v", err)
@@ -71,7 +71,7 @@ func main() {
 			continue
 		}
 
-		routers, err := zkclient.GetDruidRouterInfo(zk.GetConn())
+		routers, err := zkclient.GetDruidRouterInfo(zk.GetConn(), cfg.RouterDiscoveryPath)
 		if err != nil {
 			logger.Log.Fatalf("Error retrieving Druid Router info from ZooKeeper: %v", err)
 		}

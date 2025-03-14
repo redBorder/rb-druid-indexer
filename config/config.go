@@ -25,6 +25,7 @@ import (
 )
 
 const (
+	DEFAULT_DRUID_ROUTER  = "/druid/discoveryPath/druid:router"
 	DEFAULT_KAFKA_BROKERS = "kafka.service:9092"
 	ZOOKEEPER_HOST        = "zookeeper.service:2181"
 )
@@ -38,8 +39,9 @@ type TaskConfig struct {
 }
 
 type Config struct {
-	ZookeeperServers []string     `yaml:"zookeeper_servers"`
-	Tasks            []TaskConfig `yaml:"tasks"`
+	RouterDiscoveryPath string       `yaml:"discovery_path"`
+	ZookeeperServers    []string     `yaml:"zookeeper_servers"`
+	Tasks               []TaskConfig `yaml:"tasks"`
 }
 
 func LoadConfig(filePath string) (*Config, error) {
@@ -57,6 +59,10 @@ func LoadConfig(filePath string) (*Config, error) {
 	if err != nil {
 		logger.Log.Errorf("could not decode file")
 		return nil, fmt.Errorf("could not decode config file: %w", err)
+	}
+
+	if config.RouterDiscoveryPath == "" {
+		config.RouterDiscoveryPath = DEFAULT_DRUID_ROUTER
 	}
 
 	if len(config.ZookeeperServers) == 0 {

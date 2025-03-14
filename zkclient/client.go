@@ -24,10 +24,6 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 )
 
-const (
-	druidRouterPath = "/druid/discoveryPath/druid:router"
-)
-
 type DruidRouter struct {
 	Name        string `json:"name"`
 	ID          string `json:"id"`
@@ -37,12 +33,12 @@ type DruidRouter struct {
 	ServiceType string `json:"serviceType"`
 }
 
-func GetDruidRouterInfo(conn *zk.Conn) ([]DruidRouter, error) {
+func GetDruidRouterInfo(conn *zk.Conn, RouterDiscoveryPath string) ([]DruidRouter, error) {
 	if conn == nil {
-		return nil, fmt.Errorf("Zookeeper connection is nil")
+		return nil, fmt.Errorf("zookeeper connection is nil")
 	}
 
-	children, _, err := conn.Children(druidRouterPath)
+	children, _, err := conn.Children(RouterDiscoveryPath)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +50,7 @@ func GetDruidRouterInfo(conn *zk.Conn) ([]DruidRouter, error) {
 
 	var routers []DruidRouter
 	for _, child := range children {
-		routerNode := druidRouterPath + "/" + child
+		routerNode := RouterDiscoveryPath + "/" + child
 		data, _, err := conn.Get(routerNode)
 		if err != nil {
 			logger.Log.Errorf("failed to get data for node %s: %v", routerNode, err)
