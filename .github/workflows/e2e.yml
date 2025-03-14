@@ -78,6 +78,16 @@ jobs:
             echo "Kafka topic '$TOPIC' does not exist!"
             exit 1
           fi
+
+      - name: Create log files and directories
+        run: |
+          echo "Creating log directories and files..."
+          mkdir -p /var/log/rb-druid-indexer
+          touch /var/log/rb-druid-indexer/debug.log
+          touch /var/log/rb-druid-indexer/info.log
+          touch /var/log/rb-druid-indexer/error.log
+          echo "Log files created successfully!"
+
       - name: Start rb-druid-indexer
         run: |
           ./rb-druid-indexer --config ./e2e/config.yml
