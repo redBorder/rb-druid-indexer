@@ -30,17 +30,19 @@ generate_random_value() {
   local field=$1
   case $field in
     "client_gender" | "client_auth_type" | "client_accounting_type" | "client_vip" | "darklist_category" | "direction" | "dot11_status" | "ip_protocol_version" | "l4_proto" | "lan_ip_is_malicious" | "public_ip_is_malicious")
-      echo $(shuf -e "male" "female" "other" "unknown" "public" "private" "secure" "open" "ipv4" "ipv6" "true" "false" -n 1)
+      local options=("male" "female" "other" "unknown" "public" "private" "secure" "open" "ipv4" "ipv6" "true" "false")
+      echo ${options[$((RANDOM % ${#options[@]}))]}
       ;;
     "client_latlong" | "coordinates_map" | "dst_map" | "src_map" | "lan_ip" | "public_ip" | "wan_ip" | "ip_country_code" | "market_uuid" | "namespace_uuid" | "organization_uuid" | "zone_uuid")
-      # Generate random latitude and longitude values
-      echo "$(shuf -i -90-90 -n 1),$(shuf -i -180-180 -n 1)"
+      local lat=$((RANDOM % 181 - 90))
+      local lon=$((RANDOM % 361 - 180))
+      echo "$lat,$lon"
       ;;
     "duration" | "darklist_score" | "lan_l4_port" | "wan_l4_port" | "tcp_flags" | "tos")
-      echo $(shuf -i 1-1000 -n 1)
+      echo $((RANDOM % 1000 + 1))
       ;;
     "client_id" | "building_uuid" | "campus_uuid" | "deployment_uuid" | "floor_uuid" | "sensor_uuid" | "organization_uuid" | "market_uuid")
-      echo "$(generate_random_string)-$(shuf -i 1-1000 -n 1)"
+      echo "$(generate_random_string)-$((RANDOM % 1000 + 1))"
       ;;
     "url" | "http_user_agent" | "http_social_media" | "referer")
       echo "https://www.example.com/$(generate_random_string)"
