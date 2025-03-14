@@ -73,6 +73,7 @@ zookeeper_servers:
   - "rb-malvarez1.node:2181"
   - "rb-malvarez3.node:2181"
   - "rb-malvarez2.node:2181"
+discovery_path: "/druid/discovery/druid:router"
 
 tasks:
   - task_name: "rb_monitor"
@@ -139,7 +140,12 @@ tasks:
 - **Type**: Array of strings.
 - **Example**: 
     - `"127.0.0.1:2181"`
-
+    - 
+## discovery_path
+- **Description**: (optional field) ZooKeeper path where Druid routers are announced
+- **Type**: String.
+- **Example**: 
+    - `"/druid/discovery/druid:router"`
 ## tasks
 - **Description**: A list of tasks to be managed by the indexer. Each task contains the following attributes:
 
@@ -169,7 +175,6 @@ tasks:
 - **Example**: 
     kafka_brokers:
       - `"kafka.service:9092"`
-      - `"kafka2.service:9092"`
 
 ### custom_dimensions
 - **Description**: List of dimensions to append to orginal existing dimensions
