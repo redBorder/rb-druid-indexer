@@ -3,7 +3,7 @@ name: Kafka and Druid End-to-End Test
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   setup-and-test:
