@@ -7,7 +7,9 @@ bash "$SCRIPT_PATH"
 
 echo "Checking if Druid tasks are running..."
 
-DRUID_TASK_STATUS=$(curl -s -X POST -H "Content-Type: application/json" -d '{"query":"SELECT * FROM druid_task WHERE status = \'RUNNING\'"}' "$DRUID_HOST/druid/v2/sql")
+DRUID_TASK_STATUS=$(curl -s -X POST -H "Content-Type: application/json" \
+  -d '{"query": "SELECT * FROM druid_task WHERE status = '\''RUNNING'\''"}' \
+  "$DRUID_HOST/druid/v2/sql")
 
 if echo "$DRUID_TASK_STATUS" | grep -q "RUNNING"; then
   echo "Druid task is running!"
