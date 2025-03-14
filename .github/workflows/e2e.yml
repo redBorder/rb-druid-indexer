@@ -39,7 +39,7 @@ jobs:
 
       - name: Start Docker containers
         run: |
-          docker-compose -f docker-compose.yml up -d
+          cd e2e && docker-compose -f docker-compose.yml up -d
 
       - name: Build rb-druid-indexer
         run: |
