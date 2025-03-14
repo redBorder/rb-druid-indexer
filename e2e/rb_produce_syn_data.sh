@@ -66,7 +66,7 @@ generate_random_json() {
   echo $json
 }
 
-for i in {1..10}; do
+for i in {1..1000}; do
   echo "Sending random JSON data to topic: $TOPIC"
   
   JSON_DATA=$(generate_random_json)

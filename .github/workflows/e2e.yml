@@ -80,13 +80,12 @@ jobs:
           fi
 
       - name: Create log files and directories
-        user: '0'
         run: |
           echo "Creating log directories and files..."
-          mkdir -p /var/log/rb-druid-indexer
-          touch /var/log/rb-druid-indexer/debug.log
-          touch /var/log/rb-druid-indexer/info.log
-          touch /var/log/rb-druid-indexer/error.log
+          sudo mkdir -p /var/log/rb-druid-indexer
+          sudo touch /var/log/rb-druid-indexer/debug.log
+          sudo touch /var/log/rb-druid-indexer/info.log
+          sudo touch /var/log/rb-druid-indexer/error.log
           echo "Log files created successfully!"
 
       - name: Start rb-druid-indexer
