@@ -1,0 +1,50 @@
+name: E2E Testing with Kafka and Druid
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        ports:
+          - 2181:2181
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:latest
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      druid:
+        image: apache/druid:latest
+        ports:
+          - 8888:8888
+          - 8082:8082
+          - 8090:8090
+          - 8081:8081
+        env:
+          DRUID_NODE_TYPE: router,broker,overlord,historical,indexer
+          DRUID_HOST: localhost
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Wait for services to be ready
+        run: |
+          sleep 30
+          nc -zv localhost 9092
+          nc -zv localhost 8082
+          nc -zv localhost 8090
