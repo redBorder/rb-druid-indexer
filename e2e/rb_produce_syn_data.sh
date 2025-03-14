@@ -33,7 +33,8 @@ generate_random_value() {
       echo $(shuf -e "male" "female" "other" "unknown" "public" "private" "secure" "open" "ipv4" "ipv6" "true" "false" -n 1)
       ;;
     "client_latlong" | "coordinates_map" | "dst_map" | "src_map" | "lan_ip" | "public_ip" | "wan_ip" | "ip_country_code" | "market_uuid" | "namespace_uuid" | "organization_uuid" | "zone_uuid")
-      echo "$(shuf -i -1800-1800 -n 1),$(shuf -i -900-900 -n 1)" 
+      # Generate random latitude and longitude values
+      echo "$(shuf -i -90-90 -n 1),$(shuf -i -180-180 -n 1)"
       ;;
     "duration" | "darklist_score" | "lan_l4_port" | "wan_l4_port" | "tcp_flags" | "tos")
       echo $(shuf -i 1-1000 -n 1)
@@ -66,7 +67,7 @@ generate_random_json() {
   echo $json
 }
 
-for i in {1..1000}; do
+for i in {1..25}; do
   echo "Sending random JSON data to topic: $TOPIC"
   
   JSON_DATA=$(generate_random_json)
