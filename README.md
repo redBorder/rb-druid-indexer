@@ -6,6 +6,8 @@
 	<em><code>Simple distributed druid-indexer task manager for kafka ingestion </code></em>
 </p>
 <p align="center">
+  [e2e-shield]: https://github.com/redBorder/rb-druid-indexer/actions/workflows/e2e.yml/badge.svg?branch=master
+  [build-shield]: https://github.com/redBorder/rb-druid-indexer/actions/workflows/build.yml/badge.svg?branch=master
 	<img src="https://img.shields.io/github/license/redBorder/rb-druid-indexer?style=default&logo=opensourceinitiative&logoColor=white&color=ff2400" alt="license">
 	<img src="https://img.shields.io/github/last-commit/redBorder/rb-druid-indexer?style=default&logo=git&logoColor=white&color=ff2400" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/redBorder/rb-druid-indexer?style=default&color=ff2400" alt="repo-top-language">

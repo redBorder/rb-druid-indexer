@@ -2,8 +2,9 @@ name: Test rb-druid-indexer (end-to-end)
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   setup-and-test:
