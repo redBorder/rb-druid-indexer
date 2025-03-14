@@ -10,8 +10,8 @@
 	<img src="https://img.shields.io/github/last-commit/redBorder/rb-druid-indexer?style=default&logo=git&logoColor=white&color=ff2400" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/redBorder/rb-druid-indexer?style=default&color=ff2400" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/redBorder/rb-druid-indexer?style=default&color=ff2400" alt="repo-language-count">
-	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/go.yml?label=Go%20Build" alt="repo-language-count">
-	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/e2e.yml?label=End%20to%20End" alt="repo-language-count">
+	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/go.yml?branch=master&label=Go%20Build" alt="repo-language-count">
+	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/e2e.yml?branch=master&label=End%20to%20End" alt="repo-language-count">
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
 </p>
