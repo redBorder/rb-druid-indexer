@@ -99,4 +99,4 @@ jobs:
 
       - name: Stop Docker containers
         run: |
-          docker-compose -f docker-compose.yml down
+          docker-compose -f ./e2e/docker-compose.yml down

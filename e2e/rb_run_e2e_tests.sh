@@ -16,8 +16,7 @@ if [[ "$SUPERVISOR_TASK_STATUS" == "[]" ]]; then
   echo "No supervisors found. Exiting with failure."
   exit 1
 else
-  echo "Supervisor tasks found. Exiting with success."
-  exit 0
+  echo "Supervisor tasks found."
 fi
 
 DRUID_TASK_DATA=$(curl -s -o response.json -w "%{http_code}" -X POST -H "Content-Type: application/json" \
@@ -31,9 +30,10 @@ echo "Druid Query Result:"
 cat response.json
 
 if [ "$HTTP_STATUS" -eq 200 ]; then
-  echo "Druid query successful. Exiting with success."
-  exit 0
+  echo "Druid query successful."
 else
   echo "Druid query failed with status code $HTTP_STATUS. Exiting with failure."
   exit 1
 fi
+
+exit 0
