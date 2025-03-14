@@ -21,7 +21,7 @@ import (
 	"os"
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
-	druiddatasources "rb-druid-indexer/druid/datasources"
+	druidconfig "rb-druid-indexer/druid/config"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
 	"time"
@@ -109,7 +109,7 @@ func main() {
 				logger.Log.Fatalf("No configuration found for task: %s", taskName)
 			}
 
-			config, found := druiddatasources.GetDataSourceConfig(taskConfig.Spec)
+			config, found := druidconfig.GetDataSourceConfig(taskConfig.Spec)
 			if !found {
 				logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
 			}
