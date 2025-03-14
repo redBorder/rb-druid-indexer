@@ -80,6 +80,7 @@ jobs:
           fi
 
       - name: Create log files and directories
+        user: '0'
         run: |
           echo "Creating log directories and files..."
           mkdir -p /var/log/rb-druid-indexer
