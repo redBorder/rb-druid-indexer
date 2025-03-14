@@ -44,7 +44,9 @@ jobs:
       
       - name: Wait for services to be ready
         run: |
-          sleep 30
+          sleep 60
+          nc -zv localhost 2181
+          nc -zv localhost 8888 # Druid Router
           nc -zv localhost 9092
           nc -zv localhost 8082
           nc -zv localhost 8090
