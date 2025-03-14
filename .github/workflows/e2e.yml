@@ -90,9 +90,12 @@ jobs:
 
       - name: Start rb-druid-indexer
         run: |
-          ./rb-druid-indexer --config ./e2e/config.yml
-          sleep 300
-
+          sudo ./rb-druid-indexer --config ./e2e/config.yml &
+      
+      - name: run tests
+        run: |
+          sudo ./e2e/rb_run_e2e_tests.sh
+          
       - name: Stop Docker containers
         run: |
           docker-compose -f docker-compose.yml down
