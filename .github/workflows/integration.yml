@@ -1,4 +1,4 @@
-name: Test rb-druid-indexer (end-to-end)
+name: Test rb-druid-indexer (integration tests)
 
 on:
   push:
