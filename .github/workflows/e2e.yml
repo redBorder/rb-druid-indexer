@@ -1,4 +1,4 @@
-name: Kafka and Druid End-to-End Test
+name: Test rb-druid-indexer (end-to-end)
 
 on:
   push:
@@ -95,7 +95,7 @@ jobs:
       - name: run tests
         run: |
           sudo ./e2e/rb_run_e2e_tests.sh
-          
+
       - name: Stop Docker containers
         run: |
           docker-compose -f docker-compose.yml down
