@@ -36,11 +36,11 @@ jobs:
 
       - name: Generate docker-compose.yml
         run: |
-          ./e2e/rb_generate_compose.sh > docker-compose.yml
+          ./integration/rb_generate_compose.sh > docker-compose.yml
 
       - name: Start Docker containers
         run: |
-          cd e2e && docker-compose -f docker-compose.yml up -d
+          cd integration && docker-compose -f docker-compose.yml up -d
 
       - name: Build rb-druid-indexer
         run: |
@@ -91,13 +91,13 @@ jobs:
 
       - name: Start rb-druid-indexer
         run: |
-          sudo ./rb-druid-indexer --config ./e2e/config.yml &
+          sudo ./rb-druid-indexer --config ./integration/config.yml &
       
       - name: run tests
         run: |
           sleep 30
-          sudo ./e2e/rb_run_e2e_tests.sh
+          sudo ./integration/rb_run_integration_tests.sh
 
       - name: Stop Docker containers
         run: |
-          docker-compose -f ./e2e/docker-compose.yml down
+          docker-compose -f ./integration/docker-compose.yml down
