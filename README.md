@@ -11,7 +11,7 @@
 	<img src="https://img.shields.io/github/languages/top/redBorder/rb-druid-indexer?style=default&color=ff2400" alt="repo-top-language">
 	<img src="https://img.shields.io/github/languages/count/redBorder/rb-druid-indexer?style=default&color=ff2400" alt="repo-language-count">
 	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/go.yml?branch=master&label=Go%20Build" alt="repo-language-count">
-	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/integration.yml?branch=master&label=Integration%20Tests" alt="repo-language-count">
+	<img src="https://img.shields.io/github/actions/workflow/status/redBorder/rb-druid-indexer/integration.yml?branch=master&label=Unit%20Tests%20%%20Integration%20Tests" alt="repo-language-count">
 </p>
 <p align="center"><!-- default option, no dependency badges. -->
 </p>
