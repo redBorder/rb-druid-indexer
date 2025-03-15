@@ -138,7 +138,7 @@ tasks:
 - **Type**: Array of strings.
 - **Example**: 
     - `"127.0.0.1:2181"`
-    - 
+    - `"127.0.0.2:2181"`
 ## discovery_path
 - **Description**: (optional field) ZooKeeper path where Druid routers are announced
 - **Type**: String.
