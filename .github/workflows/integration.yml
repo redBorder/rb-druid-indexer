@@ -16,7 +16,7 @@ jobs:
 
       - name: Start ZooKeeper using Docker
         run: |
-          sudo docker run -d --name zookeeper -p 2181:2181 wurstmeister/zookeeper:3.4.6
+          sudo docker run -d --name zookeeper -p 2181:2181 zookeeper:3.8.4
 
       - name: Wait for ZooKeeper to be ready
         run: |
