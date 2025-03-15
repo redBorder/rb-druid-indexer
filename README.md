@@ -22,18 +22,15 @@
 
 ##  Table of Contents
 
-- [ Overview](#-overview)
-- [ Features](#-features)
-- [ Project Structure](#-project-structure)
-  - [ Project Index](#-project-index)
-- [ Getting Started](#-getting-started)
-  - [ Prerequisites](#-prerequisites)
-  - [ Installation](#-installation)
-  - [ Usage](#-usage)
-- [ Project Roadmap](#-project-roadmap)
+- [ Overview](#overview)
+- [ Features](#features)
+- [ Project Structure](#project-structure)
+- [ Getting Started](#getting-started)
+  - [ Prerequisites](#prerequisites)
+  - [ Installation](#installation)
+  - [ Usage](#usage)
 - [ Contributing](#-contributing)
 - [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
 
 ---
 
@@ -60,7 +57,7 @@ You can notice this fast with this diagram
 - Multi Druid Router compatible
 - Auto Finder for Druid Routers
 - Cluster compatible & FailOver support using ZooKeeper 
-- Automatic task managment and load balancer when submiting / deleting tasks
+- Automatic task managment and load balancing when submiting / deleting tasks
 
 ---
 
@@ -255,42 +252,70 @@ So if you want to add your own you have to make a copy of any datasource and inc
 
 ```sh
 rb-druid-indexer
+├── LICENSE
+├── Makefile
+├── README.md
 ├── assets
-│   └── image.png
+│   ├── arch_img_new.png
+│   ├── image.png
+│   └── old_vs_new.png
 ├── config
-│   └── config.go
+│   ├── config.go
+│   └── config_test.go
 ├── druid
-│   ├── datasources
+│   ├── config
 │   │   ├── config.go
+│   │   └── config_test.go
+│   ├── datasources
 │   │   ├── event.go
+│   │   ├── event_test.go
 │   │   ├── flow.go
+│   │   ├── flow_test.go
 │   │   ├── location.go
+│   │   ├── location_test.go
 │   │   ├── monitor.go
+│   │   ├── monitor_test.go
 │   │   ├── scanner.go
+│   │   ├── scanner_test.go
 │   │   ├── state.go
+│   │   ├── state_test.go
 │   │   ├── vault.go
-│   │   └── wireless.go
+│   │   ├── vault_test.go
+│   │   ├── wireless.go
+│   │   └── wireless_test.go
 │   ├── realtime.go
-│   └── router.go
+│   ├── realtime_test.go
+│   ├── router.go
+│   └── router_test.go
 ├── example_config.yml
 ├── go.mod
 ├── go.sum
-├── LICENSE
+├── integration
+│   ├── config.yml
+│   ├── docker-compose.yml
+│   ├── environment
+│   ├── rb_create_topics.sh
+│   ├── rb_generate_compose.sh
+│   ├── rb_produce_syn_data.sh
+│   └── rb_run_integration_tests.sh
 ├── logger
-│   └── logger.go
+│   ├── logger.go
+│   └── logger_test.go
 ├── main.go
-├── Makefile
+├── main_test.go
 ├── packaging
 │   └── rpm
 │       ├── Makefile
 │       ├── rb-druid-indexer.service
-│       ├── rb-druid-indexer.spec
+│       └── rb-druid-indexer.spec
 ├── rb-druid-indexer
-├── README.md
 └── zkclient
     ├── client.go
+    ├── client_test.go
     ├── election.go
-    └── task_announcer.go
+    ├── election_test.go
+    ├── task_announcer.go
+    └── task_announcer_test.go
 ```
 
 ---
@@ -334,7 +359,7 @@ Run rb-druid-indexer using the following command:
 **Using `go modules`** &nbsp; [<img align="center" src="https://img.shields.io/badge/Go-00ADD8.svg?style={badge_style}&logo=go&logoColor=white" />](https://golang.org/)
 
 ```sh
-❯ ./rb-druid-indexer -c config.yml
+❯ ./rb-druid-indexer --config example_config.yml
 ```
 
 
