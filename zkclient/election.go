@@ -51,8 +51,17 @@ func IsZKAlive(conn *zk.Conn) bool {
 	if conn == nil {
 		return false
 	}
-	state := conn.State()
-	return state == zk.StateConnected || state == zk.StateHasSession
+
+	for i := 0; i < 3; i++ {
+		state := conn.State()
+
+		if state == zk.StateConnected || state == zk.StateHasSession {
+			return true
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+	return false
 }
 
 func (zkClient *ZKClient) CreateLeaderNode() (string, error) {
@@ -70,6 +79,9 @@ func (zkClient *ZKClient) CreateLeaderNode() (string, error) {
 }
 
 func extractSeq(nodeName string) (int64, error) {
+	if len(nodeName) < 10 {
+		return 0, fmt.Errorf("nodeName %q is too short to extract sequence", nodeName)
+	}
 	seq := nodeName[len(nodeName)-10:]
 	return strconv.ParseInt(seq, 10, 64)
 }

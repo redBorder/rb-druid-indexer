@@ -7,7 +7,42 @@ on:
     branches: [ "master" ]
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
+      - name: Start ZooKeeper using Docker
+        run: |
+          sudo docker run -d --name zookeeper -p 2181:2181 wurstmeister/zookeeper:3.4.6
+
+      - name: Wait for ZooKeeper to be ready
+        run: |
+          sleep 10 
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22.7'
+
+      - name: Run Unit tests
+        run: |
+          sudo go test ./...
+
+      - name: Stop and remove ZooKeeper
+        run: |
+          sudo docker stop zookeeper
+          sudo docker rm zookeeper
+
   setup-and-test:
+    needs: unit-test
     runs-on: ubuntu-latest
     
     services:

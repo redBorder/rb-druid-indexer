@@ -33,7 +33,12 @@ type DruidRouter struct {
 	ServiceType string `json:"serviceType"`
 }
 
-func GetDruidRouterInfo(conn *zk.Conn, RouterDiscoveryPath string) ([]DruidRouter, error) {
+type ZkClient interface {
+	Children(path string) ([]string, *zk.Stat, error)
+	Get(path string) ([]byte, *zk.Stat, error)
+}
+
+func GetDruidRouterInfo(conn ZkClient, RouterDiscoveryPath string) ([]DruidRouter, error) {
 	if conn == nil {
 		return nil, fmt.Errorf("zookeeper connection is nil")
 	}
