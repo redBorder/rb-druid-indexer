@@ -1,4 +1,4 @@
-name: Test rb-druid-indexer (integration tests)
+name: Test rb-druid-indexer (unit tests -> integration tests)
 
 on:
   push:
@@ -13,11 +13,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Install Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
 
       - name: Start ZooKeeper using Docker
         run: |
