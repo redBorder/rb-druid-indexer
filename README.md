@@ -24,6 +24,7 @@
 
 - [ Overview](#overview)
 - [ Features](#features)
+- [ Configuration](#configuration)
 - [ Project Structure](#project-structure)
 - [ Getting Started](#getting-started)
   - [ Prerequisites](#prerequisites)
