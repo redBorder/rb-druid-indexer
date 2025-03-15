@@ -14,6 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Create log directory
+        run: |
+          sudo mkdir -p /var/log/rb-druid-indexer/
+          sudo chmod -R 777 /var/log/rb-druid-indexer/
+          
       - name: Start ZooKeeper using Docker
         run: |
           sudo docker run -d --name zookeeper -p 2181:2181 zookeeper:3.8.4
