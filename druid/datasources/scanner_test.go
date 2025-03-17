@@ -53,7 +53,7 @@ func TestScannerDimensions(t *testing.T) {
 		t.Errorf("Expected second dimension to be 'pri_text', got %q", ScannerDimensions[1])
 	}
 	if ScannerDimensions[56] != "port_state" {
-		t.Errorf("Expected last dimension to be 'port_state', got %q", ScannerDimensions[48])
+		t.Errorf("Expected last dimension to be 'port_state', got %q", ScannerDimensions[56])
 	}
 }
 

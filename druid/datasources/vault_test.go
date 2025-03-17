@@ -43,7 +43,7 @@ func TestVaultDimensionsExclusions(t *testing.T) {
 }
 
 func TestVaultDimensions(t *testing.T) {
-	const expectedLength = 41
+	const expectedLength = 46
 	if len(VaultDimensions) != expectedLength {
 		t.Errorf("Expected VaultDimensions length to be %d, got %d", expectedLength, len(VaultDimensions))
 	}
@@ -54,8 +54,8 @@ func TestVaultDimensions(t *testing.T) {
 	if VaultDimensions[1] != "pri_text" {
 		t.Errorf("Expected second dimension to be 'pri_text', got %q", VaultDimensions[1])
 	}
-	if VaultDimensions[40] != "alarm_severity" {
-		t.Errorf("Expected last dimension to be 'alarm_severity', got %q", VaultDimensions[33])
+	if VaultDimensions[45] != "wireless_station" {
+		t.Errorf("Expected last dimension to be 'alarm_severity', got %q", VaultDimensions[45])
 	}
 }
 

@@ -33,7 +33,8 @@ var VaultDimensions = []string{
 	"namespace", "namespace_uuid", "deployment", "deployment_uuid", "market", "market_uuid",
 	"organization", "organization_uuid", "campus", "campus_uuid", "building", "building_uuid",
 	"floor", "floor_uuid", "action", "incident_uuid", "alarm_id", "alarm_name", "alarm_product_type",
-	"alarm_condition", "alarm_user", "alarm_severity",
+	"alarm_condition", "alarm_user", "alarm_severity", "traffic_lan_ip", "traffic_wan_ip",
+	"intrusion_source", "intrusion_target", "wireless_station",
 }
 
 const VaultDataSource = "rb_vault"

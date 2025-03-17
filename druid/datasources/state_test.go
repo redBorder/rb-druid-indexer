@@ -57,7 +57,7 @@ func TestStateDimensions(t *testing.T) {
 		t.Errorf("Expected second dimension to be 'type', got %q", StateDimensions[1])
 	}
 	if StateDimensions[31] != "client_count" {
-		t.Errorf("Expected last dimension to be 'client_count', got %q", StateDimensions[27])
+		t.Errorf("Expected last dimension to be 'client_count', got %q", StateDimensions[31])
 	}
 }
 

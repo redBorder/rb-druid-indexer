@@ -56,7 +56,7 @@ func TestWirelessDimensions(t *testing.T) {
 		t.Errorf("Expected second dimension to be 'type', got %q", WirelessDimensions[1])
 	}
 	if WirelessDimensions[31] != "client_count" {
-		t.Errorf("Expected last dimension to be 'client_count', got %q", WirelessDimensions[27])
+		t.Errorf("Expected last dimension to be 'client_count', got %q", WirelessDimensions[31])
 	}
 }
 
