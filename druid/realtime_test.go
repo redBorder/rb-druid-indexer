@@ -72,4 +72,7 @@ func TestGenerateConfig(t *testing.T) {
 	if config.Spec.TuningConfig.Type != "kafka" {
 		t.Errorf("Expected TuningConfig.Type to be 'kafka', got '%s'", config.Spec.TuningConfig.Type)
 	}
+	if config.Spec.TuningConfig.ResetOffsetAutomatically != true {
+		t.Errorf("Expected TuningConfig.ResetOffsetAutomatically to be 'true', got '%t'", config.Spec.TuningConfig.ResetOffsetAutomatically)
+	}
 }

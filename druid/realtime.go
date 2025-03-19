@@ -74,7 +74,8 @@ type InputFormat struct {
 }
 
 type TuningConfig struct {
-	Type string `json:"type"`
+	Type                     string `json:"type"`
+	ResetOffsetAutomatically bool   `json:"resetOffsetAutomatically"`
 }
 
 func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
@@ -109,7 +110,8 @@ func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timest
 				},
 			},
 			TuningConfig: TuningConfig{
-				Type: "kafka",
+				Type:                     "kafka",
+				ResetOffsetAutomatically: true,
 			},
 		},
 	}
