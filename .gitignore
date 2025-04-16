@@ -11,6 +11,8 @@
 # Ignore pkgs folder
 packaging/rpm/pkgs/
 
+rb-druid-indexer
+
 # Test binary, built with `go test -c`
 *.test
 
