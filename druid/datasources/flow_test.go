@@ -57,7 +57,7 @@ func TestFlowDimensions(t *testing.T) {
 	if FlowDimensions[1] != "building" {
 		t.Errorf("Expected second dimension to be 'building', got %q", FlowDimensions[1])
 	}
-	if FlowDimensions[92] != "zone_uuid" {
+	if FlowDimensions[94] != "zone_uuid" {
 		t.Errorf("Expected last dimension to be 'zone_uuid', got %q", FlowDimensions[94])
 	}
 }
