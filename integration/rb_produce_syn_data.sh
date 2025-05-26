@@ -13,12 +13,12 @@ FlowDimensions=("application_id_name" "building" "building_uuid" "campus" "campu
 "dot11_status" "dst_map" "duration" "engine_id_name" "floor" "floor_uuid" "host" "host_l2_domain"
 "http_social_media" "http_user_agent" "https_common_name" "interface_name" "ip_as_name" "ip_country_code"
 "ip_protocol_version" "l4_proto" "lan_interface_description" "lan_interface_name" "lan_ip"
-"lan_ip_is_malicious" "lan_ip_as_name" "lan_ip_country_code" "lan_ip_name" "lan_ip_net_name"
+"lan_ip_as_name" "lan_ip_country_code" "lan_ip_name" "lan_ip_net_name"
 "lan_l4_port" "lan_name" "lan_vlan" "market" "market_uuid" "namespace" "namespace_uuid" "organization"
-"organization_uuid" "product_name" "public_ip" "public_ip_is_malicious" "public_ip_mac" "referer"
+"organization_uuid" "product_name" "public_ip" "public_ip_mac" "referer"
 "referer_l2" "scatterplot" "selector_name" "sensor_ip" "sensor_name" "sensor_uuid" "service_provider"
 "service_provider_uuid" "src_map" "tcp_flags" "tos" "type" "url" "wan_interface_description"
-"wan_interface_name" "wan_ip" "wan_ip_is_malicious" "wan_ip_as_name" "wan_ip_country_code" "wan_ip_map"
+"wan_interface_name" "wan_ip" "wan_ip_as_name" "wan_ip_country_code" "wan_ip_map"
 "wan_ip_net_name" "wan_l4_port" "wan_name" "wan_vlan" "wireless_id" "wireless_operator" "wireless_station"
 "zone" "zone_uuid")
 
@@ -29,7 +29,7 @@ generate_random_string() {
 generate_random_value() {
   local field=$1
   case $field in
-    "client_gender" | "client_auth_type" | "client_accounting_type" | "client_vip" | "darklist_category" | "direction" | "dot11_status" | "ip_protocol_version" | "l4_proto" | "lan_ip_is_malicious" | "public_ip_is_malicious")
+    "client_gender" | "client_auth_type" | "client_accounting_type" | "client_vip" | "darklist_category" | "direction" | "dot11_status" | "ip_protocol_version" | "l4_proto" )
       local options=("male" "female" "other" "unknown" "public" "private" "secure" "open" "ipv4" "ipv6" "true" "false")
       echo ${options[$((RANDOM % ${#options[@]}))]}
       ;;
