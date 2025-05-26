@@ -30,6 +30,7 @@ var WirelessDimensionsExclusions = []string{}
 var WirelessDimensions = []string{
 	"wireless_station", "type", "wireless_channel", "wireless_tx_power",
 	"wireless_admin_state", "wireless_op_state", "wireless_mode", "wireless_slot",
+	"ti_category", "ti_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
 	"sensor_name", "sensor_uuid", "deployment", "deployment_uuid", "namespace",
 	"namespace_uuid", "organization", "organization_uuid", "market", "market_uuid",
 	"floor", "floor_uuid", "zone", "zone_uuid", "building", "building_uuid",

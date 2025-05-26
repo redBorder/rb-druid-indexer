@@ -44,7 +44,7 @@ func TestLocationDimensionsExclusions(t *testing.T) {
 }
 
 func TestLocationDimensions(t *testing.T) {
-	const expectedLength = 28
+	const expectedLength = 33
 	if len(LocationDimensions) != expectedLength {
 		t.Errorf("Expected LocationDimensions length to be %d, got %d", expectedLength, len(LocationDimensions))
 	}
