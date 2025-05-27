@@ -29,7 +29,7 @@ var LocationDimensionsExclusions = []string{}
 
 var LocationDimensions = []string{
 	"location_id", "latitude", "longitude", "address", "city", "region",
-	"ti_category", "ti_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
+	"ti_category", "ti_average_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
 	"country", "postal_code", "sensor_name", "sensor_uuid", "deployment",
 	"deployment_uuid", "namespace", "namespace_uuid", "organization",
 	"organization_uuid", "market", "market_uuid", "floor", "floor_uuid",

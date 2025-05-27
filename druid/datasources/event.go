@@ -40,7 +40,7 @@ var EventDimensions = []string{
 	"l4_proto", "sensor_name", "scatterplot", "src_net_name", "dst_net_name", "tos",
 	"service_provider_uuid", "namespace_uuid", "market_uuid", "organization_uuid",
 	"campus_uuid", "building_uuid", "deployment_uuid", "darklist_category", "darklist_direction",
-	"ti_category", "ti_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
+	"ti_category", "ti_average_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
 	"darklist_score_name", "darklist_score", "incident_uuid",
 }
 

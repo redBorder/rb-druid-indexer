@@ -29,7 +29,7 @@ var VaultDimensionsExclusions = []string{
 var VaultDimensions = []string{
 	"pri", "pri_text", "syslogfacility", "syslogfacility_text", "syslogseverity", "syslogseverity_text",
 	"hostname", "fromhost_ip", "app_name", "sensor_name", "proxy_uuid", "message", "status",
-	"ti_category", "ti_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
+	"ti_category", "ti_average_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
 	"category", "source", "target", "sensor_uuid", "service_provider", "service_provider_uuid",
 	"namespace", "namespace_uuid", "deployment", "deployment_uuid", "market", "market_uuid",
 	"organization", "organization_uuid", "campus", "campus_uuid", "building", "building_uuid",
