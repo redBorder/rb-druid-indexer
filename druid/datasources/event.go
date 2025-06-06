@@ -40,7 +40,7 @@ var EventDimensions = []string{
 	"l4_proto", "sensor_name", "scatterplot", "src_net_name", "dst_net_name", "tos",
 	"service_provider_uuid", "namespace_uuid", "market_uuid", "organization_uuid",
 	"campus_uuid", "building_uuid", "deployment_uuid", "darklist_category", "darklist_direction",
-	"darklist_score_name", "darklist_score", "incident_uuid", "event_uuid"
+	"darklist_score_name", "darklist_score", "incident_uuid", "event_uuid",
 }
 
 const EventDataSource = "rb_event"
