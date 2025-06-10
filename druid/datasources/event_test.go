@@ -43,7 +43,7 @@ func TestEventDimensionsExclusions(t *testing.T) {
 }
 
 func TestEventDimensions(t *testing.T) {
-	const expectedLength = 66
+	const expectedLength = 67
 	if len(EventDimensions) != expectedLength {
 		t.Errorf("Expected EventDimensions length to be %d, got %d", expectedLength, len(EventDimensions))
 	}
@@ -54,8 +54,8 @@ func TestEventDimensions(t *testing.T) {
 	if EventDimensions[1] != "src_is_malicious" {
 		t.Errorf("Expected second dimension to be 'src_is_malicious', got %q", EventDimensions[1])
 	}
-	if EventDimensions[65] != "incident_uuid" {
-		t.Errorf("Expected last dimension to be 'incident_uuid', got %q", EventDimensions[65])
+	if EventDimensions[66] != "incident_uuid" {
+		t.Errorf("Expected last dimension to be 'incident_uuid', got %q", EventDimensions[66])
 	}
 }
 
