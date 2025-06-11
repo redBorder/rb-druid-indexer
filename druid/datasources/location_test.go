@@ -44,7 +44,7 @@ func TestLocationDimensionsExclusions(t *testing.T) {
 }
 
 func TestLocationDimensions(t *testing.T) {
-	const expectedLength = 33
+	const expectedLength = 28
 	if len(LocationDimensions) != expectedLength {
 		t.Errorf("Expected LocationDimensions length to be %d, got %d", expectedLength, len(LocationDimensions))
 	}
@@ -55,8 +55,8 @@ func TestLocationDimensions(t *testing.T) {
 	if LocationDimensions[1] != "latitude" {
 		t.Errorf("Expected second dimension to be 'latitude', got %q", LocationDimensions[1])
 	}
-	if LocationDimensions[32] != "service_provider_uuid" {
-		t.Errorf("Expected last dimension to be 'service_provider_uuid', got %q", LocationDimensions[32])
+	if LocationDimensions[27] != "service_provider_uuid" {
+		t.Errorf("Expected last dimension to be 'campus_uuid', got %q", LocationDimensions[27])
 	}
 }
 

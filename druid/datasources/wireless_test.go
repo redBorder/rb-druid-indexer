@@ -44,7 +44,7 @@ func TestWirelessDimensionsExclusions(t *testing.T) {
 }
 
 func TestWirelessDimensions(t *testing.T) {
-	const expectedLength = 37
+	const expectedLength = 32
 	if len(WirelessDimensions) != expectedLength {
 		t.Errorf("Expected WirelessDimensions length to be %d, got %d", expectedLength, len(WirelessDimensions))
 	}
@@ -55,8 +55,8 @@ func TestWirelessDimensions(t *testing.T) {
 	if WirelessDimensions[1] != "type" {
 		t.Errorf("Expected second dimension to be 'type', got %q", WirelessDimensions[1])
 	}
-	if WirelessDimensions[36] != "client_count" {
-		t.Errorf("Expected last dimension to be 'client_count', got %q", WirelessDimensions[36])
+	if WirelessDimensions[31] != "client_count" {
+		t.Errorf("Expected last dimension to be 'client_count', got %q", WirelessDimensions[31])
 	}
 }
 
