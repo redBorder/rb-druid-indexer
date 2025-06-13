@@ -80,7 +80,7 @@ jobs:
 
       - name: Start Docker containers
         run: |
-          cd integration && docker-compose -f docker-compose.yml up -d
+          docker-compose -f integration/docker-compose.yml up -d
 
       - name: Build rb-druid-indexer
         run: |
