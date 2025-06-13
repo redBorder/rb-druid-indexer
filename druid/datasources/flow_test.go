@@ -45,7 +45,7 @@ func TestFlowDimensionsExclusions(t *testing.T) {
 }
 
 func TestFlowDimensions(t *testing.T) {
-	const expectedLength = 90
+	const expectedLength = 89
 	if len(FlowDimensions) != expectedLength {
 		t.Errorf("Expected FlowDimensions length to be %d, got %d", expectedLength, len(FlowDimensions))
 	}

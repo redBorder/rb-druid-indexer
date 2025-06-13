@@ -42,7 +42,7 @@ func TestEventDimensionsExclusions(t *testing.T) {
 }
 
 func TestEventDimensions(t *testing.T) {
-	const expectedLength = 63
+	const expectedLength = 62
 	if len(EventDimensions) != expectedLength {
 		t.Errorf("Expected EventDimensions length to be %d, got %d", expectedLength, len(EventDimensions))
 	}
