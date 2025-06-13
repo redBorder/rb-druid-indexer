@@ -77,14 +77,7 @@ jobs:
       - name: Generate docker-compose.yml
         run: |
           ./integration/rb_generate_compose.sh > docker-compose.yml
-      
-      - name: Clean up previous Docker environment
-        run: |
-          echo "Cleaning up previous Docker containers and volumes..."
-          docker-compose -f integration/docker-compose.yml down -v || true
-          docker rm -f kafka || true
-          docker system prune -f || true
-      
+
       - name: Start Docker containers
         run: |
           cd integration && docker-compose -f docker-compose.yml up -d
