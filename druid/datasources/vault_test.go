@@ -43,7 +43,7 @@ func TestVaultDimensionsExclusions(t *testing.T) {
 }
 
 func TestVaultDimensions(t *testing.T) {
-	const expectedLength = 46
+	const expectedLength = 48
 	if len(VaultDimensions) != expectedLength {
 		t.Errorf("Expected VaultDimensions length to be %d, got %d", expectedLength, len(VaultDimensions))
 	}
