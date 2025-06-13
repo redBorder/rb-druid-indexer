@@ -30,7 +30,6 @@ func TestFlowMetrics(t *testing.T) {
 		{Type: "longSum", Name: "sum_rssi", FieldName: "client_rssi_num"},
 		{Type: "hyperUnique", Name: "clients", FieldName: "client_mac"},
 		{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-		{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 	}
 
 	if !reflect.DeepEqual(FlowMetrics, expected) {

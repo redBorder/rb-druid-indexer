@@ -27,7 +27,6 @@ func TestEventMetrics(t *testing.T) {
 	expected := []druidrouter.Metrics{
 		{Type: "count", Name: "events"},
 		{Type: "hyperUnique", Name: "signatures", FieldName: "msg"},
-		{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 	}
 
 	if !reflect.DeepEqual(EventMetrics, expected) {
