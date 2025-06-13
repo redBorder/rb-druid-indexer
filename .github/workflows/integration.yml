@@ -94,6 +94,16 @@ jobs:
           fi
           echo "Indexer binary exists and is executable."
 
+      - name: Start Kafka
+        run: |
+          docker-compose up -d kafka
+          # O el comando que uses para iniciar Kafka
+          
+      - name: Wait for Kafka to be ready
+        run: |
+          echo "Waiting for Kafka container to be ready..."
+          sleep 10
+          
       - name: Create Kafka topics
         run: |
           TOPICS=("rb_monitor" "rb_flow_post")
