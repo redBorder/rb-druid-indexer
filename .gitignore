@@ -9,7 +9,7 @@
 *.dylib
 
 # Ignore pkgs folder
-packaging/rpm/pkgs/
+packaging/rpm/
 
 # Test binary, built with `go test -c`
 *.test
