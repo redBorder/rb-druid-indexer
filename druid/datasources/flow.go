@@ -25,7 +25,6 @@ var FlowMetrics = []druidrouter.Metrics{
 	{Type: "longSum", Name: "sum_rssi", FieldName: "client_rssi_num"},
 	{Type: "hyperUnique", Name: "clients", FieldName: "client_mac"},
 	{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-	{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 }
 
 var FlowDimensionsExclusions = []string{
@@ -36,8 +35,7 @@ var FlowDimensions = []string{
 	"application_id_name", "building", "building_uuid", "campus", "campus_uuid",
 	"client_accounting_type", "client_auth_type", "client_fullname", "client_gender",
 	"client_id", "client_latlong", "client_loyality", "client_mac", "client_mac_vendor",
-	"client_rssi", "client_vip", "conversation", "coordinates_map", "darklist_category",
-	"darklist_direction", "darklist_score_name", "darklist_score", "deployment",
+	"client_rssi", "client_vip", "conversation", "coordinates_map", "deployment",
 	"deployment_uuid", "direction", "dot11_protocol", "dot11_status", "dst_map", "duration",
 	"engine_id_name", "floor", "floor_uuid", "host", "host_l2_domain", "http_social_media",
 	"http_user_agent", "https_common_name", "interface_name", "ip_as_name", "ip_country_code",
