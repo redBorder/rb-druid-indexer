@@ -38,7 +38,7 @@ var EventDimensions = []string{
 	"campus", "building", "floor", "floor_uuid", "conversation", "iplen_range",
 	"l4_proto", "sensor_name", "scatterplot", "src_net_name", "dst_net_name", "tos",
 	"service_provider_uuid", "namespace_uuid", "market_uuid", "organization_uuid",
-	"campus_uuid", "building_uuid", "deployment_uuid", "incident_uuid", "event_uuid"
+	"campus_uuid", "building_uuid", "deployment_uuid", "incident_uuid", "event_uuid",
 }
 
 const EventDataSource = "rb_event"
