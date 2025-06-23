@@ -50,11 +50,11 @@ func TestEventDimensions(t *testing.T) {
 	if EventDimensions[0] != "src" {
 		t.Errorf("Expected first dimension to be 'src', got %q", EventDimensions[0])
 	}
-	if EventDimensions[1] != "src_is_malicious" {
-		t.Errorf("Expected second dimension to be 'src_is_malicious', got %q", EventDimensions[1])
+	if EventDimensions[1] != "dst" {
+		t.Errorf("Expected second dimension to be 'dst', got %q", EventDimensions[1])
 	}
-	if EventDimensions[61] != "incident_uuid" {
-		t.Errorf("Expected last dimension to be 'incident_uuid', got %q", EventDimensions[65])
+	if EventDimensions[61] != "ti_indicators" {
+		t.Errorf("Expected last dimension to be 'ti_indicators', got %q", EventDimensions[61])
 	}
 }
 

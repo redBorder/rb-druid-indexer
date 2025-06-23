@@ -45,7 +45,7 @@ func TestFlowDimensionsExclusions(t *testing.T) {
 }
 
 func TestFlowDimensions(t *testing.T) {
-	const expectedLength = 89
+	const expectedLength = 91
 	if len(FlowDimensions) != expectedLength {
 		t.Errorf("Expected FlowDimensions length to be %d, got %d", expectedLength, len(FlowDimensions))
 	}
@@ -56,8 +56,8 @@ func TestFlowDimensions(t *testing.T) {
 	if FlowDimensions[1] != "building" {
 		t.Errorf("Expected second dimension to be 'building', got %q", FlowDimensions[1])
 	}
-	if FlowDimensions[88] != "zone_uuid" {
-		t.Errorf("Expected last dimension to be 'zone_uuid', got %q", FlowDimensions[92])
+	if FlowDimensions[90] != "zone_uuid" {
+		t.Errorf("Expected last dimension to be 'zone_uuid', got %q", FlowDimensions[90])
 	}
 }
 
