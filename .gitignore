@@ -9,7 +9,12 @@
 *.dylib
 
 # Ignore pkgs folder
-packaging/rpm/pkgs/
+SOURCES
+pkgs
+
+.DS_Store
+
+rb-druid-indexer
 
 # Test binary, built with `go test -c`
 *.test
@@ -26,3 +31,7 @@ go.work.sum
 
 # env file
 .env
+
+# RPM 
+pkgs
+SOURCES

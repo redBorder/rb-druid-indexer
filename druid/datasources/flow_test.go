@@ -30,7 +30,6 @@ func TestFlowMetrics(t *testing.T) {
 		{Type: "longSum", Name: "sum_rssi", FieldName: "client_rssi_num"},
 		{Type: "hyperUnique", Name: "clients", FieldName: "client_mac"},
 		{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-		{Type: "longSum", Name: "sum_dl_score", FieldName: "darklist_score"},
 	}
 
 	if !reflect.DeepEqual(FlowMetrics, expected) {
@@ -46,7 +45,7 @@ func TestFlowDimensionsExclusions(t *testing.T) {
 }
 
 func TestFlowDimensions(t *testing.T) {
-	const expectedLength = 93
+	const expectedLength = 91
 	if len(FlowDimensions) != expectedLength {
 		t.Errorf("Expected FlowDimensions length to be %d, got %d", expectedLength, len(FlowDimensions))
 	}
@@ -57,8 +56,8 @@ func TestFlowDimensions(t *testing.T) {
 	if FlowDimensions[1] != "building" {
 		t.Errorf("Expected second dimension to be 'building', got %q", FlowDimensions[1])
 	}
-	if FlowDimensions[92] != "zone_uuid" {
-		t.Errorf("Expected last dimension to be 'zone_uuid', got %q", FlowDimensions[92])
+	if FlowDimensions[90] != "zone_uuid" {
+		t.Errorf("Expected last dimension to be 'zone_uuid', got %q", FlowDimensions[90])
 	}
 }
 
