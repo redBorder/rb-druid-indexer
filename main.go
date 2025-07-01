@@ -21,7 +21,7 @@ import (
 	"os"
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
-	druidconfig "rb-druid-indexer/druid/config"
+	// druidconfig "rb-druid-indexer/druid/config"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
 	"time"
@@ -109,12 +109,24 @@ func main() {
 				logger.Log.Fatalf("No configuration found for task: %s", taskName)
 			}
 
-			config, found := druidconfig.GetDataSourceConfig(taskConfig.Spec)
-			if !found {
-				logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
+			// config, found := druidconfig.GetDataSourceConfig(taskConfig.Spec)
+			// if !found {
+			// 	logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
+			// }
+
+			// mergedDimensions := append(config.Dimensions, taskConfig.CustomDimensions...)
+
+			dimensions := []string{}
+
+			if taskConfig.Dimensions != nil {
+					dimensions = taskConfig.Dimensions
 			}
 
-			mergedDimensions := append(config.Dimensions, taskConfig.CustomDimensions...)
+			dimensionsExclusions := []string{}
+
+			if taskConfig.DimensionsExclusions != nil {
+					dimensionsExclusions = taskConfig.DimensionsExclusions
+			}
 
 			jsonStr, err := druidrouter.GenerateConfig(
 				taskConfig.TaskName,
@@ -122,13 +134,16 @@ func main() {
 				taskConfig.Feed,
 				"timestamp",
 				"ruby",
-				mergedDimensions,
-				config.DimensionsExclusions,
-				config.Metrics,
+				dimensions,
+				dimensionsExclusions,
+				taskConfig.Metrics,
 			)
 			if err != nil {
 				logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 			}
+
+
+			logger.Log.Debugf("\n\nResult json: %s", jsonStr)
 
 			druidrouter.SubmitTask(routers, jsonStr)
 		}
