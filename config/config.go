@@ -40,7 +40,6 @@ type TaskConfig struct {
 	Dimensions           []string `yaml:"dimensions"`
 	DimensionsExclusions []string `yaml:"dimensions_exclusions"`
 	Metrics          []druidrouter.Metrics `yaml:"metrics"`
-	// CustomDimensions []string `yaml:"custom_dimensions"`
 }
 
 type Config struct {
@@ -83,9 +82,6 @@ func LoadConfig(filePath string) (*Config, error) {
 		if len(task.KafkaBrokers) == 0 {
 			config.Tasks[i].KafkaBrokers = []string{DEFAULT_KAFKA_BROKERS}
 		}
-		// if task.CustomDimensions == nil {
-		// 	config.Tasks[i].CustomDimensions = []string{}
-		// }
 	}
 
 	return &config, nil

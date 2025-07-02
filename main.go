@@ -21,7 +21,6 @@ import (
 	"os"
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
-	// druidconfig "rb-druid-indexer/druid/config"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
 	"time"
@@ -108,13 +107,6 @@ func main() {
 			if taskConfig == nil {
 				logger.Log.Fatalf("No configuration found for task: %s", taskName)
 			}
-
-			// config, found := druidconfig.GetDataSourceConfig(taskConfig.Spec)
-			// if !found {
-			// 	logger.Log.Fatalf("No configuration found for data source: %s", taskConfig.TaskName)
-			// }
-
-			// mergedDimensions := append(config.Dimensions, taskConfig.CustomDimensions...)
 
 			dimensions := []string{}
 
