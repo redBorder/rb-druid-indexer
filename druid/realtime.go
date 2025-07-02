@@ -43,7 +43,7 @@ type DataSchema struct {
 type Metrics struct {
 	Type      string `json:"type"`
 	Name      string `json:"name"`
-	FieldName string `json:"fieldName"`
+	FieldName string `json:"fieldName" yaml:"fieldName"`
 }
 
 type GranularitySpec struct {
