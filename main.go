@@ -134,9 +134,6 @@ func main() {
 				logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 			}
 
-
-			logger.Log.Debugf("\n\nResult json: %s", jsonStr)
-
 			druidrouter.SubmitTask(routers, jsonStr)
 		}
 
