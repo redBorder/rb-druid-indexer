@@ -22,16 +22,29 @@
 
 ##  Table of Contents
 
-- [ Overview](#overview)
-- [ Features](#features)
-- [ Configuration](#configuration)
-- [ Project Structure](#project-structure)
-- [ Getting Started](#getting-started)
-  - [ Prerequisites](#prerequisites)
-  - [ Installation](#installation)
-  - [ Usage](#usage)
-- [ Contributing](#contributing)
-- [ License](#license)
+- [Table of Contents](#table-of-contents)
+- [Overview](#overview)
+- [How rb-druid-indexer fits in our new indexing system or yours](#how-rb-druid-indexer-fits-in-our-new-indexing-system-or-yours)
+- [Features](#features)
+- [Configuration](#configuration)
+- [zookeeper\_servers](#zookeeper_servers)
+- [discovery\_path](#discovery_path)
+- [tasks](#tasks)
+  - [task\_name](#task_name)
+  - [spec](#spec)
+  - [feed](#feed)
+  - [kafka\_brokers](#kafka_brokers)
+  - [dimensions](#dimensions)
+  - [dimensions\_exclusions](#dimensions_exclusions)
+  - [metrics](#metrics)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
 ---
 
@@ -64,7 +77,7 @@ You can notice this fast with this diagram
 
 ## Configuration
 
-The configuration for `rb-druid-indexer` is defined in a YAML file and includes settings for both Zookeeper and the tasks that should be executed. Below is an example configuration file:
+The configuration for `rb-druid-indexer` is defined in a YAML file that is generated with the [druid-indexer cookbook](https://github.com/redBorder/cookbook-druid-indexer) in **/etc/rb-druid-indexer/config.yml**. It includes settings for both Zookeeper, the tasks that should be executed, the dimensions and their metrics. Below is an example configuration file:
 
 ```yaml
 zookeeper_servers:
@@ -79,15 +92,22 @@ tasks:
     spec: "rb_monitor"
     kafka_brokers:
       - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
-  - task_name: "rb_state"
-    feed: "rb_state_post"
-    spec: "rb_state"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
+    dimensions_exclusions:
+        - "unit"
+        - "type"
+        - "value"
+    metrics:
+        - type: count
+          name: events
+        - type: doubleSum
+          name: sum_value
+          fieldName: value
+        - type: doubleMax
+          name: max_value
+          fieldName: value
+        - type: doubleMin
+          name: min_value
+          fieldName: value
   - task_name: "rb_flow"
     feed: "rb_flow_post"
     spec: "rb_flow"
@@ -95,41 +115,53 @@ tasks:
       - "rb-malvarez1.node:9092"
       - "rb-malvarez3.node:9092"
       - "rb-malvarez2.node:9092"
-  - task_name: "rb_event"
-    feed: "rb_event_post"
-    spec: "rb_event"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
-  - task_name: "rb_vault"
-    feed: "rb_vault_post"
-    spec: "rb_vault"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
-  - task_name: "rb_scanner"
-    feed: "rb_scanner_post"
-    spec: "rb_scanner"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
-  - task_name: "rb_location"
-    feed: "rb_loc_post"
-    spec: "rb_location"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
-  - task_name: "rb_wireless"
-    feed: "rb_wireless"
-    spec: "rb_wireless"
-    kafka_brokers:
-      - "rb-malvarez1.node:9092"
-      - "rb-malvarez3.node:9092"
-      - "rb-malvarez2.node:9092"
+    dimensions:
+      - "application_id_name"
+      - "building"
+      - "building_uuid"
+      - "campus"
+      - "campus_uuid"
+      - "client_accounting_type"
+      - "client_auth_type"
+      - "client_fullname"
+      - "client_gender"
+      - "client_id"
+      - "client_latlong"
+      - "client_loyality"
+      - "client_mac"
+      - "client_mac_vendor"
+      - "client_rssi"
+      - "client_vip"
+      - "conversation"
+      - "coordinates_map"
+      - "deployment"
+      - "deployment_uuid"
+      - "direction"
+    dimensions_exclusions:
+      - "bytes"
+      - "pkts"
+      - "flow_end_reason"
+      - "first_switched"
+      - "wan_ip_name"
+    metrics:
+      - type: count
+        name: events
+      - type: longSum
+        name: sum_bytes
+        fieldName: bytes
+      - type: longSum
+        name: sum_pkts
+        fieldName: pkts
+      - type: longSum
+        name: sum_rssi
+        fieldName: client_rssi_num
+      - type: hyperUnique
+        name: clients
+        fieldName: client_mac
+      - type: hyperUnique
+        name: wireless_stations
+        fieldName: wireless_station
+...
 ```
 
 
@@ -174,78 +206,31 @@ tasks:
     kafka_brokers:
       - `"kafka.service:9092"`
 
-### custom_dimensions
-- **Description**: List of dimensions to append to orginal existing dimensions
-- **Type**: Array of strings.
+### dimensions
+- **Description**: The list of dimensions for the datasource
+- **Type**: Array.
 - **Example**: 
-    - `"http_url"`
-	- `"dst_port_as_uint64"`
+    dimensions:
+      - `"lan_ip"`
 
-Every dataSource is managed in `/druid/datasources/${datasource}.go` for example
+### dimensions_exclusions
+- **Description**: The list of dimensions that will be excluded for the datasource
+- **Type**: Array.
+- **Example**: 
+    dimensions_exclusions:
+      - `"wan_ip"`
 
-```go
-package datasources
+### metrics
+- **Description**: The list of metrics that will be used for the datasource
+- **Type**: Array of objects.
+- **Example**: 
+    metrics:
+      - type: count
+        name: events
+      - type: longSum
+        name: sum_bytes
+        fieldName: bytes
 
-import druidrouter "rb-druid-indexer/druid"
-
-var FlowMetrics = []druidrouter.Metrics{
-	{Type: "count", Name: "events"},
-	{Type: "longSum", Name: "sum_bytes", FieldName: "bytes"},
-	{Type: "longSum", Name: "sum_pkts", FieldName: "pkts"},
-	{Type: "longSum", Name: "sum_rssi", FieldName: "client_rssi_num"},
-	{Type: "hyperUnique", Name: "clients", FieldName: "client_mac"},
-	{Type: "hyperUnique", Name: "wireless_stations", FieldName: "wireless_station"},
-}
-
-var FlowDimensionsExclusions = []string{
-	"bytes", "pkts", "flow_end_reason", "first_switched", "wan_ip_name",
-}
-
-var FlowDimensions = []string{
-	"application_id_name", "building", "building_uuid", "campus", "campus_uuid",
-	"client_accounting_type", "client_auth_type", "client_fullname", "client_gender",
-	"client_id", "client_latlong", "client_loyality", "client_mac", "client_mac_vendor",
-	"client_rssi", "client_vip", "conversation", "coordinates_map", "deployment",
-	"deployment_uuid", "direction", "dot11_protocol", "dot11_status", "dst_map", "duration",
-	"engine_id_name", "floor", "floor_uuid", "host", "host_l2_domain", "http_social_media",
-	"http_user_agent", "https_common_name", "interface_name", "ip_as_name", "ip_country_code",
-	"ip_protocol_version", "l4_proto", "lan_interface_description", "lan_interface_name",
-	"lan_ip", "lan_ip_as_name", "lan_ip_country_code", "lan_ip_name",
-	"lan_ip_net_name", "lan_l4_port", "lan_name", "lan_vlan", "market", "market_uuid",
-	"namespace", "namespace_uuid", "organization", "organization_uuid", "product_name",
-	"public_ip", "public_ip_mac", "referer", "referer_l2",
-	"scatterplot", "selector_name", "sensor_ip", "sensor_name", "sensor_uuid", "service_provider",
-	"service_provider_uuid", "src_map", "tcp_flags", "tos", "type", "url", "wan_interface_description",
-	"wan_interface_name", "wan_ip",	"wan_ip_as_name", "wan_ip_country_code",
-	"wan_ip_map", "wan_ip_net_name", "wan_l4_port", "wan_name", "wan_vlan", "wireless_id",
-	"ti_category", "ti_average_score", "ti_policy_name", "ti_policy_id", "ti_indicators",
-	"wireless_operator", "wireless_station", "zone", "zone_uuid",
-}
-
-const FlowDataSource = "rb_flow"
-```
-
-and later published in the `config.go` file in `/druid/datasources/config.go`
-
-```go
-var Configs = map[string]DataSourceConfig{
-	"rb_flow": {
-		DataSource: FlowDataSource,
-		Metrics:    FlowMetrics,
-		Dimensions: FlowDimensions,
-		DimensionsExclusions: FlowDimensionsExclusions
-	},
-	"rb_monitor": {
-		DataSource: MonitorDataSource,
-		Metrics:    MonitorMetrics,
-		Dimensions: MonitorDimensions,
-		DimensionsExclusions: MonitorDimensionsExclusions
-	},
-}
-```
-
-
-So if you want to add your own you have to make a copy of any datasource and include in the config.go of datasource for later call it with your `config.yml`
 ---
 
 ##  Project Structure
@@ -266,23 +251,6 @@ rb-druid-indexer
 │   ├── config
 │   │   ├── config.go
 │   │   └── config_test.go
-│   ├── datasources
-│   │   ├── event.go
-│   │   ├── event_test.go
-│   │   ├── flow.go
-│   │   ├── flow_test.go
-│   │   ├── location.go
-│   │   ├── location_test.go
-│   │   ├── monitor.go
-│   │   ├── monitor_test.go
-│   │   ├── scanner.go
-│   │   ├── scanner_test.go
-│   │   ├── state.go
-│   │   ├── state_test.go
-│   │   ├── vault.go
-│   │   ├── vault_test.go
-│   │   ├── wireless.go
-│   │   └── wireless_test.go
 │   ├── realtime.go
 │   ├── realtime_test.go
 │   ├── router.go

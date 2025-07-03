@@ -27,6 +27,8 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	druidrouter "rb-druid-indexer/druid"
+
 )
 
 type MockZKClient struct {
@@ -68,7 +70,7 @@ func (m *MockDruidRouter) DeleteTask(routers []string, taskName string) error {
 	return args.Error(0)
 }
 
-func (m *MockDruidRouter) GenerateConfig(taskName string, kafkaBrokers []string, feed, timestampField, parseSpec string, dimensions, dimensionsExclusions []string, metrics []Metrics) (string, error) {
+func (m *MockDruidRouter) GenerateConfig(taskName string, kafkaBrokers []string, feed, timestampField, parseSpec string, dimensions, dimensionsExclusions []string, metrics []druidrouter.Metrics) (string, error) {
 	args := m.Called(taskName, kafkaBrokers, feed, timestampField, parseSpec, dimensions, dimensionsExclusions, metrics)
 	return args.String(0), args.Error(1)
 }
@@ -91,48 +93,111 @@ tasks:
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_state"
     feed: "rb_state_post"
     spec: "rb_state"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_flow"
     feed: "rb_flow_post"
     spec: "rb_flow"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_event"
     feed: "rb_event_post"
     spec: "rb_event"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_vault"
     feed: "rb_vault_post"
     spec: "rb_vault"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_scanner"
     feed: "rb_scanner_post"
     spec: "rb_scanner"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_location"
     feed: "rb_loc_post"
     spec: "rb_location"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
+
   - task_name: "rb_wireless"
     feed: "rb_wireless"
     spec: "rb_wireless"
     kafka_brokers:
       - "kafka1.service:9092"
       - "kafka2.service:9093"
+    dimensions:
+      - "dim1"
+    dimensions_exclusions:
+      - "dim2"
+    metrics:
+      - type: count
+        name: metric1
 `
 	tmpDir := t.TempDir()
 	configPath := filepath.Join(tmpDir, "test-config.yml")
@@ -147,8 +212,8 @@ func TestMainFlow(t *testing.T) {
 	configPath := createTestConfig(t)
 
 	cfg, err := config.LoadConfig(configPath)
+	
 	assert.NoError(t, err)
-
 	fmt.Println(cfg)
 	assert.NotNil(t, cfg.Tasks)
 	assert.Equal(t, "rb_monitor", cfg.Tasks[0].TaskName)
@@ -193,14 +258,6 @@ func TestMainFlow(t *testing.T) {
 
 		assert.NotNil(t, taskConfig)
 
-		dimensions := []string{"dim1", "dim2"}
-		dimensionsExclusions := []string{}
-		metrics := []Metrics{
-			{Name: "metric1", Type: "count"},
-			{Name: "metric2", Type: "doubleSum"},
-		}
-
-		mergedDimensions := append(dimensions, taskConfig.CustomDimensions...)
 
 		mockDruid.On("GenerateConfig",
 			taskConfig.TaskName,
@@ -208,9 +265,9 @@ func TestMainFlow(t *testing.T) {
 			taskConfig.Feed,
 			"timestamp",
 			"ruby",
-			mergedDimensions,
-			dimensionsExclusions,
-			metrics,
+			taskConfig.Dimensions,
+			taskConfig.DimensionsExclusions,
+			taskConfig.Metrics,
 		).Return(`{"test": "config"}`, nil)
 
 		mockDruid.On("SubmitTask", routers, `{"test": "config"}`).Return(nil)
@@ -221,9 +278,9 @@ func TestMainFlow(t *testing.T) {
 			taskConfig.Feed,
 			"timestamp",
 			"ruby",
-			mergedDimensions,
-			dimensionsExclusions,
-			metrics,
+			taskConfig.Dimensions,
+			taskConfig.DimensionsExclusions,
+			taskConfig.Metrics,
 		)
 		assert.NoError(t, err)
 		assert.Equal(t, `{"test": "config"}`, jsonStr)
