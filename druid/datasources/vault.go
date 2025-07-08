@@ -34,7 +34,7 @@ var VaultDimensions = []string{
 	"namespace", "namespace_uuid", "deployment", "deployment_uuid", "market", "market_uuid",
 	"organization", "organization_uuid", "campus", "campus_uuid", "building", "building_uuid",
 	"floor", "floor_uuid", "action", "incident_uuid", "alarm_id", "alarm_name", "alarm_product_type",
-	"alarm_condition", "alarm_user", "alarm_severity", "lan_ip", "wan_ip",
+	"alarm_condition", "alarm_user", "alarm_severity", "lan_ip", "wan_ip", "client_mac",
 	"wireless_station", "asset_ip_address", "asset_mac_address",
 }
 
