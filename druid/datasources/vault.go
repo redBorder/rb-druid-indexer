@@ -26,6 +26,7 @@ var VaultDimensionsExclusions = []string{
 	"unit", "type", "valur",
 }
 
+// VaultDimensions contains the list of dimensions for the Vault data source.
 var VaultDimensions = []string{
 	"pri", "pri_text", "syslogfacility", "syslogfacility_text", "syslogseverity", "syslogseverity_text",
 	"hostname", "fromhost_ip", "app_name", "sensor_name", "proxy_uuid", "message", "status",
