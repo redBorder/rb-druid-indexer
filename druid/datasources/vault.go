@@ -38,4 +38,5 @@ var VaultDimensions = []string{
 	"wireless_station", "asset_ip_address", "asset_mac_address",
 }
 
+// VaultDataSource is the name of the Vault data source in Druid.
 const VaultDataSource = "rb_vault"
