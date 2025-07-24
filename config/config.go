@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"os"
 	"rb-druid-indexer/logger"
+	druidrouter "rb-druid-indexer/druid"
+
 
 	"gopkg.in/yaml.v3"
 )
@@ -35,7 +37,9 @@ type TaskConfig struct {
 	Feed             string   `yaml:"feed"`
 	Spec             string   `yaml:"spec"`
 	KafkaBrokers     []string `yaml:"kafka_brokers"`
-	CustomDimensions []string `yaml:"custom_dimensions"`
+	Dimensions           []string `yaml:"dimensions"`
+	DimensionsExclusions []string `yaml:"dimensions_exclusions"`
+	Metrics          []druidrouter.Metrics `yaml:"metrics"`
 }
 
 type Config struct {
@@ -77,9 +81,6 @@ func LoadConfig(filePath string) (*Config, error) {
 	for i, task := range config.Tasks {
 		if len(task.KafkaBrokers) == 0 {
 			config.Tasks[i].KafkaBrokers = []string{DEFAULT_KAFKA_BROKERS}
-		}
-		if task.CustomDimensions == nil {
-			config.Tasks[i].CustomDimensions = []string{}
 		}
 	}
 

@@ -25,7 +25,15 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
+	druidrouter "rb-druid-indexer/druid"
+
 )
+
+type Metrics struct {
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	FieldName string `json:"fieldName"`
+}
 
 func TestLoadConfig(t *testing.T) {
 	logger.Log = logrus.New()
@@ -88,8 +96,11 @@ func TestLoadConfig(t *testing.T) {
 						task.KafkaBrokers[1] != "kafka2" {
 						t.Errorf("unexpected KafkaBrokers: got %v, expected [\"kafka1\", \"kafka2\"]", task.KafkaBrokers)
 					}
-					if len(task.CustomDimensions) != 0 {
-						t.Errorf("expected empty custom dimensions, got %v", task.CustomDimensions)
+					if len(task.Dimensions) != 0 {
+						t.Errorf("expected empty dimensions, got %v", task.Dimensions)
+					}
+					if len(task.DimensionsExclusions) != 0 {
+						t.Errorf("expected empty dimensions exclusions, got %v", task.DimensionsExclusions)
 					}
 				}
 			}
@@ -107,6 +118,9 @@ func createTestConfigFile(t *testing.T, filePath string) {
 				Feed:         "feed1",
 				Spec:         "spec1",
 				KafkaBrokers: []string{"kafka1", "kafka2"},
+				Dimensions: []string{},
+				DimensionsExclusions: []string {},
+				Metrics: []druidrouter.Metrics{},
 			},
 		},
 	}
