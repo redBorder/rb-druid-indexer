@@ -71,7 +71,7 @@ You can notice this fast with this diagram
 - Multi Druid Router compatible
 - Auto Finder for Druid Routers
 - Cluster compatible & FailOver support using ZooKeeper 
-- Automatic task managment and load balancing when submiting / deleting tasks
+- Automatic task management and load balancing when submiting / deleting tasks
 
 ---
 
