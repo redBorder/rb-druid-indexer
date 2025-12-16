@@ -103,6 +103,7 @@ func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timest
 				Type: "kafka",
 				ConsumerProperties: map[string]string{
 					"bootstrap.servers": strings.Join(KafkaBrokers, ","),
+					"auto.offset.reset": "latest"
 				},
 				Topic: kafkaTopic,
 				InputFormat: InputFormat{
