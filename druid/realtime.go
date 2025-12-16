@@ -19,6 +19,7 @@ package druidrouter
 import (
 	"encoding/json"
 	"strings"
+	"fmt"
 )
 
 type KafkaConfiguration struct {
@@ -65,7 +66,7 @@ type DimensionsSpec struct {
 type IOConfig struct {
 	Type               string            `json:"type"`
 	ConsumerProperties map[string]string `json:"consumerProperties"`
-	Topic              string            `json:"topic"`
+	TopicPattern       string            `json:"topic"`
 	InputFormat        InputFormat       `json:"inputFormat"`
 }
 
@@ -78,7 +79,7 @@ type TuningConfig struct {
 	ResetOffsetAutomatically bool   `json:"resetOffsetAutomatically"`
 }
 
-func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
+func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaPattern, timestampColumn, timestampFormat string, dimensions []string, dimensionsExclusions []string, metrics []Metrics) (string, error) {
 	config := KafkaConfiguration{
 		Type: "kafka",
 		Spec: KafkaSpec{
@@ -104,7 +105,8 @@ func GenerateConfig(dataSource string, KafkaBrokers []string, kafkaTopic, timest
 				ConsumerProperties: map[string]string{
 					"bootstrap.servers": strings.Join(KafkaBrokers, ","),
 				},
-				Topic: kafkaTopic,
+				// Topic: kafkaTopic, //evolve to multiple topics ^(rb_monitor|rb_monitor_post)$
+				TopicPattern: fmt.Sprintf("^%s$", kafkaPattern),
 				InputFormat: InputFormat{
 					Type: "json",
 				},
