@@ -9,7 +9,7 @@ import (
 func TestGenerateConfig(t *testing.T) {
 	dataSource := "testDataSource"
 	kafkaBrokers := []string{"broker1:9092", "broker2:9092"}
-	kafkaTopic := "testTopic"
+	kafkaPattern := "testTopic"
 	timestampColumn := "ts"
 	timestampFormat := "auto"
 	dimensions := []string{"dim1", "dim2"}
@@ -27,7 +27,7 @@ func TestGenerateConfig(t *testing.T) {
 		},
 	}
 
-	jsonStr, err := GenerateConfig(dataSource, kafkaBrokers, kafkaTopic, timestampColumn, timestampFormat, dimensions, dimensionsExclusions, metrics)
+	jsonStr, err := GenerateConfig(dataSource, kafkaBrokers, kafkaPattern, timestampColumn, timestampFormat, dimensions, dimensionsExclusions, metrics)
 	if err != nil {
 		t.Fatalf("GenerateConfig returned an error: %v", err)
 	}
@@ -61,8 +61,8 @@ func TestGenerateConfig(t *testing.T) {
 		t.Errorf("Expected MetricsSpec to be %v, got %v", metrics, config.Spec.DataSchema.MetricsSpec)
 	}
 
-	if config.Spec.IOConfig.Topic != kafkaTopic {
-		t.Errorf("Expected Topic to be '%s', got '%s'", kafkaTopic, config.Spec.IOConfig.Topic)
+	if config.Spec.IOConfig.Topic != kafkaPattern {
+		t.Errorf("Expected Topic to be '%s', got '%s'", kafkaPattern, config.Spec.IOConfig.TopicPattern)
 	}
 	expectedBootstrap := "broker1:9092,broker2:9092"
 	if config.Spec.IOConfig.ConsumerProperties["bootstrap.servers"] != expectedBootstrap {
