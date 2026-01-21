@@ -4,7 +4,7 @@ zookeeper_servers:
 
 tasks:
   - task_name: "rb_monitor"
-    feed: "rb_monitor"
+    feed: "rb_monitor_post"
     spec: "rb_monitor"
     kafka_brokers:
       - "kafka1.service:9092"

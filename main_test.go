@@ -24,11 +24,11 @@ import (
 	"rb-druid-indexer/logger"
 	"testing"
 
+	druidrouter "rb-druid-indexer/druid"
+
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	druidrouter "rb-druid-indexer/druid"
-
 )
 
 type MockZKClient struct {
@@ -88,7 +88,7 @@ zookeeper_servers:
 
 tasks:
   - task_name: "rb_monitor"
-    feed: "rb_monitor"
+    feed: "rb_monitor_post"
     spec: "rb_monitor"
     kafka_brokers:
       - "kafka1.service:9092"
