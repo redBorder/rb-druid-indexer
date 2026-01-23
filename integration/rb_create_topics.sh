@@ -2,7 +2,7 @@
 
 KAFKA_CONTAINER="kafka"
 
-TOPICS=("rb_monitor" "rb_flow_post")
+TOPICS=("rb_monitor_post" "rb_flow_post")
 
 PARTITIONS=1
 REPLICATION_FACTOR=1
