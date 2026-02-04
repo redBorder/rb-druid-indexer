@@ -88,7 +88,7 @@ discovery_path: "/druid/discovery/druid:router"
 
 tasks:
   - task_name: "rb_monitor"
-    feed: "rb_monitor"
+    feed: "rb_monitor_post"
     spec: "rb_monitor"
     kafka_brokers:
       - "rb-malvarez1.node:9092"
@@ -196,7 +196,7 @@ tasks:
 - **Description**: The name of the Kafka feed associated with the task. This specifies which feed to listen to.
 - **Type**: String.
 - **Example**: 
-    - `"rb_monitor"`
+    - `"rb_monitor_post"`
     - `"rb_flow_post"`
 
 ### kafka_brokers
