@@ -111,6 +111,17 @@ func main() {
 			continue
 		}
 
+		compactionConfigs, err := druidrouter.GetCompactionConfigs(routers)
+		if err != nil {
+			logger.Log.Warnf("Failed to fetch compaction configs from Coordinator: %v. Assuming none configured.", err)
+			compactionConfigs = []druidrouter.CompactionConfig{}
+		}
+
+		activeCompactions := make(map[string]druidrouter.CompactionConfig)
+		for _, cc := range compactionConfigs {
+			activeCompactions[cc.DataSource] = cc
+		}
+
 		if !cleaned {
 			logger.Log.Info("Cleaning Supervisors (first time)...")
 			for _, task := range supervisorTasks {
@@ -121,6 +132,36 @@ func main() {
 		}
 
 		for _, taskConfig := range cfg.Tasks {
+			// Align/Sync compaction settings with Coordinator
+			if taskConfig.Compaction != nil && *taskConfig.Compaction {
+				cc, exists := activeCompactions[taskConfig.TaskName]
+				needsConfig := !exists || cc.SegmentGranularity != taskConfig.CompactionFrequency || cc.SkipOffsetFromLatest != taskConfig.SkipOffsetFromLatest
+				if needsConfig {
+					logger.Log.Infof("Compaction for %s is missing or outdated on the Coordinator. Submitting config...", taskConfig.TaskName)
+					err = druidrouter.SubmitCompaction(routers, taskConfig.TaskName, taskConfig.CompactionFrequency, taskConfig.SkipOffsetFromLatest)
+					if err != nil {
+						logger.Log.Errorf("Failed to configure compaction for %s: %v", taskConfig.TaskName, err)
+					} else {
+						activeCompactions[taskConfig.TaskName] = druidrouter.CompactionConfig{
+							DataSource:           taskConfig.TaskName,
+							SegmentGranularity:   taskConfig.CompactionFrequency,
+							SkipOffsetFromLatest: taskConfig.SkipOffsetFromLatest,
+						}
+					}
+				}
+			} else {
+				_, exists := activeCompactions[taskConfig.TaskName]
+				if exists {
+					logger.Log.Infof("Compaction for %s is explicitly disabled. Removing config from Coordinator...", taskConfig.TaskName)
+					err = druidrouter.DeleteCompaction(routers, taskConfig.TaskName)
+					if err != nil {
+						logger.Log.Errorf("Failed to remove compaction for %s: %v", taskConfig.TaskName, err)
+					} else {
+						delete(activeCompactions, taskConfig.TaskName)
+					}
+				}
+			}
+
 			isEmpty, err := kafkaclient.IsTopicEmpty(taskConfig.KafkaBrokers, taskConfig.Feed)
 			if err != nil {
 				logger.Log.Warnf("Failed to check if Kafka topic %s is empty: %v. Assuming it has messages.", taskConfig.Feed, err)
@@ -170,20 +211,6 @@ func main() {
 					}
 
 					druidrouter.SubmitTask(routers, jsonStr)
-
-					// Submit/Configure auto-compaction if enabled
-					if taskConfig.Compaction != nil && *taskConfig.Compaction {
-						err = druidrouter.SubmitCompaction(routers, taskConfig.TaskName, taskConfig.CompactionFrequency, taskConfig.SkipOffsetFromLatest)
-						if err != nil {
-							logger.Log.Errorf("Failed to configure compaction for %s: %v", taskConfig.TaskName, err)
-						}
-					} else {
-						// Explicitly delete compaction config if disabled
-						err = druidrouter.DeleteCompaction(routers, taskConfig.TaskName)
-						if err != nil {
-							logger.Log.Errorf("Failed to remove compaction for %s: %v", taskConfig.TaskName, err)
-						}
-					}
 				} else {
 					logger.Log.Debugf("Topic %s has messages and supervisor task %s is already running.", taskConfig.Feed, taskConfig.TaskName)
 

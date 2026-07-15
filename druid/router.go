@@ -302,5 +302,48 @@ func DeleteCompaction(routers []zkclient.DruidRouter, dataSource string) error {
 	return nil
 }
 
+type CompactionConfig struct {
+	DataSource           string `json:"dataSource"`
+	SegmentGranularity   string `json:"segmentGranularity"`
+	SkipOffsetFromLatest string `json:"skipOffsetFromLatest"`
+}
+
+type GlobalCompactionConfig struct {
+	CompactionConfigs []CompactionConfig `json:"compactionConfigs"`
+}
+
+func GetCompactionConfigs(routers []zkclient.DruidRouter) ([]CompactionConfig, error) {
+	if len(routers) == 0 {
+		return nil, fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/coordinator/v1/config/compaction", router.Address, router.Port)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch compaction configs from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	var globalConfig GlobalCompactionConfig
+	err = json.Unmarshal(body, &globalConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal compaction configs: %w", err)
+	}
+
+	return globalConfig.CompactionConfigs, nil
+}
+
 
 
