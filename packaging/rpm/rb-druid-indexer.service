@@ -4,7 +4,6 @@ Description=RedBorder Druid Indexer Manager
 [Service]
 Type=simple
 ExecStart=/usr/bin/rb-druid-indexer --config /etc/rb-druid-indexer/config.yml
-KillSignal=SIGQUIT
 TimeoutStopSec=5
 
 [Install]

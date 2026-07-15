@@ -20,12 +20,14 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"rb-druid-indexer/config"
 	druidrouter "rb-druid-indexer/druid"
 	"rb-druid-indexer/kafkaclient"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -46,6 +48,17 @@ func main() {
 	if err != nil {
 		logger.Log.Fatalf("Error connecting to ZooKeeper: %v", err)
 	}
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+	go func() {
+		sig := <-sigChan
+		logger.Log.Infof("Received signal %v. Cleaning up and exiting...", sig)
+		if zk != nil && zk.GetConn() != nil {
+			zk.GetConn().Close()
+		}
+		os.Exit(0)
+	}()
 
 	nodePath, err := zk.CreateLeaderNode()
 	if err != nil {
