@@ -72,6 +72,9 @@ You can notice this fast with this diagram
 - Auto Finder for Druid Routers
 - Cluster compatible & FailOver support using ZooKeeper 
 - Automatic task management and load balancing when submiting / deleting tasks
+- **Resource Optimization**: Automatically terminates indexing tasks for Kafka topics that stay empty (0 messages) and resumes them when new data is produced.
+- **Self-Healing Offset Recovery**: Automatically detects Kafka topic resets/recreations and executes reset requests to Druid to recover stuck supervisors.
+- **Auto-Compaction**: Configurable, automatic Coordinator-level compaction for ingested datasources to optimize query performance and metadata storage.
 
 ---
 
@@ -230,6 +233,28 @@ tasks:
       - type: longSum
         name: sum_bytes
         fieldName: bytes
+
+### compaction
+- **Description**: (optional field) Whether to enable automatic compaction on the Druid Coordinator for this datasource. If not specified, defaults to `true`.
+- **Type**: Boolean.
+- **Example**: 
+    - `compaction: true`
+
+### compaction_frequency
+- **Description**: (optional field) The granularity interval for merging segments during compaction. Defaults to `"DAY"`.
+- **Type**: String.
+- **Example**: 
+    - `"HOUR"`
+    - `"DAY"`
+    - `"WEEK"`
+    - `"MONTH"`
+
+### skip_offset_from_latest
+- **Description**: (optional field) ISO8601 duration specifying how far back from the current time to start compacting, to avoid compacting active segments currently being written to by real-time ingestion. Defaults to `"PT3H"`.
+- **Type**: String.
+- **Example**: 
+    - `"PT3H"` (3 hours)
+    - `"PT1H"` (1 hour)
 
 ---
 

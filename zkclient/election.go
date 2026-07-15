@@ -18,7 +18,6 @@ package zkclient
 
 import (
 	"fmt"
-	"log"
 	"rb-druid-indexer/logger"
 	"sort"
 	"strconv"
@@ -35,8 +34,14 @@ type ZKClient struct {
 	conn *zk.Conn
 }
 
+type SilentLogger struct{}
+
+func (s SilentLogger) Printf(format string, a ...interface{}) {
+	// Do nothing to suppress the logs
+}
+
 func NewZKClient(zookeeperServers []string) (*ZKClient, error) {
-	conn, _, err := zk.Connect(zookeeperServers, 5*time.Second)
+	conn, _, err := zk.Connect(zookeeperServers, 5*time.Second, zk.WithLogger(SilentLogger{}))
 	if err != nil {
 		return nil, err
 	}
@@ -109,8 +114,7 @@ func (zkClient *ZKClient) GetLeader() (string, error) {
 func (zkClient *ZKClient) IsLeader(nodePath string) bool {
 	leader, err := zkClient.GetLeader()
 	if err != nil {
-		logger.Log.Errorf("Error getting leader")
-		log.Fatalf("Error getting leader: %v", err)
+		logger.Log.Errorf("Error getting leader: %v", err)
 		return false
 	}
 	return nodePath == LEADER_ELECTION_PATH+"/"+leader
