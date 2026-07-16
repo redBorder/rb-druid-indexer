@@ -68,13 +68,15 @@ You can notice this fast with this diagram
 
 ##  Features
 
-- Multi Druid Router compatible
-- Auto Finder for Druid Routers
-- Cluster compatible & FailOver support using ZooKeeper 
-- Automatic task management and load balancing when submiting / deleting tasks
-- **Resource Optimization**: Automatically terminates indexing tasks for Kafka topics that stay empty (0 messages) and resumes them when new data is produced.
-- **Self-Healing Offset Recovery**: Automatically detects Kafka topic resets/recreations and executes reset requests to Druid to recover stuck supervisors.
-- **Auto-Compaction**: Configurable, automatic Coordinator-level compaction for ingested datasources to optimize query performance and metadata storage.
+- **Multi Druid Router Compatibility**: Auto-discovery and load balancing for multiple Druid routers.
+- **ZooKeeper-Backed Leadership & Failover**: High availability cluster coordination using ZooKeeper leader election.
+- **Resource Optimization**: Automatically terminates indexing tasks for empty Kafka topics to free resources and restarts them once new data is produced.
+- **Self-Healing Offset Recovery**: Compares active tasks' starting offsets against current Kafka broker offsets. Automatically detects Kafka offset resets (e.g. topic recreation) and resets supervisors to heal stuck ingestion pipelines.
+- **Auto-Compaction Alignment**: Automatically and persistently aligns Druid Coordinator auto-compaction configurations with the local task configuration.
+- **Obsolete Task Cleanup**: On startup, only terminates and cleans up obsolete tasks (removed from `config.yml`), allowing valid active supervisors to continue running uninterrupted to avoid segment fragmentation.
+- **Graceful Shutdown & Fast Failover**: Catches OS signals (`SIGTERM`, `SIGINT`, `SIGQUIT`) to cleanly close Zookeeper connections, immediately releasing the leader lock so standby nodes can resume ingestion instantly.
+- **Resilient Zookeeper Client**: Prevents connection leaks, automatically restores ephemeral leader nodes on reconnect, and suppresses log pollution using a custom silent logger.
+- **Hardened Systemd Service**: Built-in unprivileged user execution (`rb-druid-indexer`) with full sandboxing (private `/tmp`, read-only `/usr`/`/etc`, disabled privilege escalation, auto-provisioned log directory).
 
 ---
 
