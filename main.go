@@ -123,11 +123,32 @@ func main() {
 		}
 
 		if !cleaned {
-			logger.Log.Info("Cleaning Supervisors (first time)...")
-			for _, task := range supervisorTasks {
-				druidrouter.DeleteTask(routers, task)
+			logger.Log.Info("Cleaning obsolete supervisors (first time)...")
+			for _, taskName := range supervisorTasks {
+				isPresent := false
+				for _, tConfig := range cfg.Tasks {
+					if tConfig.TaskName == taskName {
+						isPresent = true
+						break
+					}
+				}
+				if !isPresent {
+					logger.Log.Infof("Supervisor %s is no longer in the configuration. Terminating it.", taskName)
+					druidrouter.DeleteTask(routers, taskName)
+				}
 			}
-			supervisorTasks = []string{}
+
+			// Re-filter supervisorTasks to keep only the ones that are still active and configured
+			var activeSupervisors []string
+			for _, taskName := range supervisorTasks {
+				for _, tConfig := range cfg.Tasks {
+					if tConfig.TaskName == taskName {
+						activeSupervisors = append(activeSupervisors, taskName)
+						break
+					}
+				}
+			}
+			supervisorTasks = activeSupervisors
 			cleaned = true
 		}
 
@@ -135,7 +156,7 @@ func main() {
 			// Align/Sync compaction settings with Coordinator
 			if taskConfig.Compaction != nil && *taskConfig.Compaction {
 				cc, exists := activeCompactions[taskConfig.TaskName]
-				needsConfig := !exists || cc.SegmentGranularity != taskConfig.CompactionFrequency || cc.SkipOffsetFromLatest != taskConfig.SkipOffsetFromLatest
+				needsConfig := !exists || cc.GranularitySpec.SegmentGranularity != taskConfig.CompactionFrequency || cc.SkipOffsetFromLatest != taskConfig.SkipOffsetFromLatest
 				if needsConfig {
 					logger.Log.Infof("Compaction for %s is missing or outdated on the Coordinator. Submitting config...", taskConfig.TaskName)
 					err = druidrouter.SubmitCompaction(routers, taskConfig.TaskName, taskConfig.CompactionFrequency, taskConfig.SkipOffsetFromLatest)
@@ -144,7 +165,7 @@ func main() {
 					} else {
 						activeCompactions[taskConfig.TaskName] = druidrouter.CompactionConfig{
 							DataSource:           taskConfig.TaskName,
-							SegmentGranularity:   taskConfig.CompactionFrequency,
+							GranularitySpec:      druidrouter.CompactionGranularitySpec{SegmentGranularity: taskConfig.CompactionFrequency},
 							SkipOffsetFromLatest: taskConfig.SkipOffsetFromLatest,
 						}
 					}

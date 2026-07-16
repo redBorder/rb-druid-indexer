@@ -239,8 +239,10 @@ func SubmitCompaction(routers []zkclient.DruidRouter, dataSource string, frequen
 	url := fmt.Sprintf("http://%s:%d/druid/coordinator/v1/config/compaction", router.Address, router.Port)
 	
 	payload := map[string]interface{}{
-		"dataSource":           dataSource,
-		"segmentGranularity":   frequency,
+		"dataSource": dataSource,
+		"granularitySpec": map[string]interface{}{
+			"segmentGranularity": frequency,
+		},
 		"skipOffsetFromLatest": skipOffset,
 	}
 
@@ -302,10 +304,14 @@ func DeleteCompaction(routers []zkclient.DruidRouter, dataSource string) error {
 	return nil
 }
 
+type CompactionGranularitySpec struct {
+	SegmentGranularity string `json:"segmentGranularity"`
+}
+
 type CompactionConfig struct {
-	DataSource           string `json:"dataSource"`
-	SegmentGranularity   string `json:"segmentGranularity"`
-	SkipOffsetFromLatest string `json:"skipOffsetFromLatest"`
+	DataSource           string                    `json:"dataSource"`
+	GranularitySpec      CompactionGranularitySpec `json:"granularitySpec"`
+	SkipOffsetFromLatest string                    `json:"skipOffsetFromLatest"`
 }
 
 type GlobalCompactionConfig struct {
