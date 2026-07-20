@@ -91,6 +91,20 @@ func main() {
 			}
 		}
 
+		// Verify that our leader node still exists in ZooKeeper
+		nodeExists, _, err := zk.GetConn().Exists(nodePath)
+		if err != nil || !nodeExists {
+			logger.Log.Warnf("Leader node %s does not exist in ZooKeeper (err: %v). Recreating leader node...", nodePath, err)
+			newNodePath, err := zk.CreateLeaderNode()
+			if err != nil {
+				logger.Log.Errorf("Failed to recreate leader node: %v", err)
+				time.Sleep(10 * time.Second)
+				continue
+			} else {
+				nodePath = newNodePath
+			}
+		}
+
 		if !zk.IsLeader(nodePath) {
 			logger.Log.Info("I am not the leader. Waiting...")
 			time.Sleep(60 * time.Second)

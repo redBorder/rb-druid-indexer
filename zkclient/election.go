@@ -76,7 +76,7 @@ func (zkClient *ZKClient) CreateLeaderNode() (string, error) {
 	}
 	if !exists {
 		_, err := zkClient.conn.Create(LEADER_ELECTION_PATH, []byte{}, 0, zk.WorldACL(zk.PermAll))
-		if err != nil {
+		if err != nil && err != zk.ErrNodeExists {
 			return "", err
 		}
 	}
@@ -96,22 +96,32 @@ func (zkClient *ZKClient) GetLeader() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	sort.Slice(children, func(i, j int) bool {
-		seqI, errI := extractSeq(children[i])
-		seqJ, errJ := extractSeq(children[j])
-		if errI != nil || errJ != nil {
-			return false
+
+	var validChildren []string
+	for _, child := range children {
+		if _, err := extractSeq(child); err == nil {
+			validChildren = append(validChildren, child)
 		}
+	}
+
+	if len(validChildren) == 0 {
+		logger.Log.Warnf("no zookeeper leader found under %s", LEADER_ELECTION_PATH)
+		return "", fmt.Errorf("no leader found")
+	}
+
+	sort.Slice(validChildren, func(i, j int) bool {
+		seqI, _ := extractSeq(validChildren[i])
+		seqJ, _ := extractSeq(validChildren[j])
 		return seqI < seqJ
 	})
-	if len(children) > 0 {
-		return children[0], nil
-	}
-	logger.Log.Errorf("no zookeeper leader found")
-	return "", fmt.Errorf("no leader found")
+
+	return validChildren[0], nil
 }
 
 func (zkClient *ZKClient) IsLeader(nodePath string) bool {
+	if nodePath == "" {
+		return false
+	}
 	leader, err := zkClient.GetLeader()
 	if err != nil {
 		logger.Log.Errorf("Error getting leader: %v", err)
