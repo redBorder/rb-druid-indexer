@@ -18,6 +18,7 @@ package logger
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -25,14 +26,22 @@ import (
 
 var Log *logrus.Logger
 
-func ensureLogFileExists(filename string) {
+func ensureLogFileExists(filename string) bool {
+	dir := filepath.Dir(filename)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		logrus.Warnf("Could not create log directory %s: %v", dir, err)
+		return false
+	}
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		if f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644); err == nil {
 			f.Close()
+			return true
 		} else {
-			logrus.Fatalf("Failed to create log file %s: %v", filename, err)
+			logrus.Warnf("Failed to create log file %s: %v", filename, err)
+			return false
 		}
 	}
+	return true
 }
 
 func InitLogger() {
@@ -47,14 +56,15 @@ func InitLogger() {
 	}
 
 	for file, levels := range logFiles {
-		ensureLogFileExists(file)
-		Log.AddHook(NewLogFileHook(&lumberjack.Logger{
-			Filename:   file,
-			MaxSize:    10,
-			MaxBackups: 5,
-			MaxAge:     30,
-			Compress:   true,
-		}, levels...))
+		if ensureLogFileExists(file) {
+			Log.AddHook(NewLogFileHook(&lumberjack.Logger{
+				Filename:   file,
+				MaxSize:    10,
+				MaxBackups: 5,
+				MaxAge:     30,
+				Compress:   true,
+			}, levels...))
+		}
 	}
 
 	Log.SetOutput(os.Stdout)

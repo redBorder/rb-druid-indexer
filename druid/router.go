@@ -17,6 +17,7 @@
 package druidrouter
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -116,3 +117,239 @@ func DeleteTask(routers []zkclient.DruidRouter, task string) {
 
 	logger.Log.Infof("Task %s deleted successfully from %s: %s", task, url, string(body))
 }
+
+type ActiveTask struct {
+	Id              string           `json:"id"`
+	StartingOffsets map[string]int64 `json:"startingOffsets"`
+	Type            string           `json:"type"`
+}
+
+type SupervisorPayload struct {
+	DataSource    string           `json:"dataSource"`
+	Stream        string           `json:"stream"`
+	Healthy       bool             `json:"healthy"`
+	DetailedState string           `json:"detailedState"`
+	LatestOffsets map[string]int64 `json:"latestOffsets"`
+	ActiveTasks   []ActiveTask     `json:"activeTasks"`
+}
+
+type SupervisorStatus struct {
+	Id             string            `json:"id"`
+	GenerationTime string            `json:"generationTime"`
+	Payload        SupervisorPayload `json:"payload"`
+}
+
+func GetSupervisorStatus(routers []zkclient.DruidRouter, supervisor string) (*SupervisorStatus, string, error) {
+	if len(routers) == 0 {
+		return nil, "", fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/status", router.Address, router.Port, supervisor)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to fetch supervisor status from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, "", fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	var status SupervisorStatus
+	err = json.Unmarshal(body, &status)
+	if err != nil {
+		return nil, "", fmt.Errorf("failed to unmarshal response from %s: %w", url, err)
+	}
+
+	return &status, string(body), nil
+}
+
+func ResetSupervisor(routers []zkclient.DruidRouter, supervisor string) error {
+	if len(routers) == 0 {
+		return fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/reset", router.Address, router.Port, supervisor)
+	resp, err := http.Post(url, "application/json", nil)
+	if err != nil {
+		return fmt.Errorf("failed to reset supervisor from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	logger.Log.Infof("Supervisor %s reset successfully on %s: %s", supervisor, url, string(body))
+	return nil
+}
+
+func ResetOffsetsSupervisor(routers []zkclient.DruidRouter, supervisor string) error {
+	if len(routers) == 0 {
+		return fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s/resetOffsets", router.Address, router.Port, supervisor)
+	resp, err := http.Post(url, "application/json", nil)
+	if err != nil {
+		return fmt.Errorf("failed to resetOffsets supervisor from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	logger.Log.Infof("Supervisor %s resetOffsets successfully on %s: %s", supervisor, url, string(body))
+	return nil
+}
+
+func SubmitCompaction(routers []zkclient.DruidRouter, dataSource string, frequency string, skipOffset string) error {
+	if len(routers) == 0 {
+		return fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/coordinator/v1/config/compaction", router.Address, router.Port)
+	
+	payload := map[string]interface{}{
+		"dataSource": dataSource,
+		"granularitySpec": map[string]interface{}{
+			"segmentGranularity": frequency,
+		},
+		"skipOffsetFromLatest": skipOffset,
+	}
+
+	jsonBytes, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal compaction config: %w", err)
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonBytes))
+	if err != nil {
+		return fmt.Errorf("failed to submit compaction config to %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	logger.Log.Infof("Compaction config submitted successfully for %s on %s: %s", dataSource, url, string(body))
+	return nil
+}
+
+func DeleteCompaction(routers []zkclient.DruidRouter, dataSource string) error {
+	if len(routers) == 0 {
+		return fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/coordinator/v1/config/compaction/%s", router.Address, router.Port, dataSource)
+
+	req, err := http.NewRequest(http.MethodDelete, url, nil)
+	if err != nil {
+		return fmt.Errorf("failed to create DELETE request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to delete compaction config from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNotFound {
+		return fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	logger.Log.Infof("Compaction config deleted successfully for %s on %s: %s", dataSource, url, string(body))
+	return nil
+}
+
+type CompactionGranularitySpec struct {
+	SegmentGranularity string `json:"segmentGranularity"`
+}
+
+type CompactionConfig struct {
+	DataSource           string                    `json:"dataSource"`
+	GranularitySpec      CompactionGranularitySpec `json:"granularitySpec"`
+	SkipOffsetFromLatest string                    `json:"skipOffsetFromLatest"`
+}
+
+type GlobalCompactionConfig struct {
+	CompactionConfigs []CompactionConfig `json:"compactionConfigs"`
+}
+
+func GetCompactionConfigs(routers []zkclient.DruidRouter) ([]CompactionConfig, error) {
+	if len(routers) == 0 {
+		return nil, fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/coordinator/v1/config/compaction", router.Address, router.Port)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch compaction configs from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	var globalConfig GlobalCompactionConfig
+	err = json.Unmarshal(body, &globalConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal compaction configs: %w", err)
+	}
+
+	return globalConfig.CompactionConfigs, nil
+}
+
+
+
