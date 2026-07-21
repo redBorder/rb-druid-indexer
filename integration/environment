@@ -31,6 +31,8 @@ druid_extensions_loadList=["druid-histogram", "druid-datasketches", "druid-looku
 
 druid_zk_service_host=zookeeper
 
+druid_coordinator_asOverlord_enabled=true
+
 druid_metadata_storage_host=
 druid_metadata_storage_type=postgresql
 druid_metadata_storage_connector_connectURI=jdbc:postgresql://postgres:5432/druid
