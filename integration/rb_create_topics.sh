@@ -7,6 +7,12 @@ TOPICS=("rb_monitor_post" "rb_flow_post")
 PARTITIONS=1
 REPLICATION_FACTOR=1
 
+echo "Waiting for Kafka to be ready..."
+until docker exec $KAFKA_CONTAINER kafka-topics --list --bootstrap-server localhost:9092 &>/dev/null; do
+    echo "Kafka is not ready yet. Retrying in 2 seconds..."
+    sleep 2
+done
+
 for TOPIC in "${TOPICS[@]}"; do
     echo "Creating topic: $TOPIC"
     

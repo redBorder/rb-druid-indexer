@@ -1,0 +1,4 @@
+zookeeper_servers:
+  - "zookeeper.service:2181"
+discovery_path: "/druid/discovery/druid:router"
+tasks: []

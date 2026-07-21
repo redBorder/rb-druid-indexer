@@ -26,6 +26,7 @@ go build -o bin/rb-druid-indexer ./main.go
 %install
 install -D -m 0755 bin/rb-druid-indexer %{buildroot}/usr/bin/rb-druid-indexer
 install -D -m 0644 packaging/rpm/rb-druid-indexer.service %{buildroot}/usr/lib/systemd/system/rb-druid-indexer.service
+install -D -m 0644 packaging/rpm/config.yml %{buildroot}/etc/rb-druid-indexer/config.yml
 
 %pre
 getent group rb-druid-indexer >/dev/null || groupadd -r rb-druid-indexer
@@ -33,18 +34,19 @@ getent passwd rb-druid-indexer >/dev/null || useradd -r -g rb-druid-indexer -d /
 
 %post
 systemctl daemon-reload
-if [ -f /etc/rb-druid-indexer/config.yml ]; then
-    rm -f /etc/rb-druid-indexer/config.yml
-fi
 
 %files
 %defattr(755,root,root)
 /usr/bin/rb-druid-indexer
 %defattr(644,root,root)
 /usr/lib/systemd/system/rb-druid-indexer.service
+%dir /etc/rb-druid-indexer
+%config(noreplace) /etc/rb-druid-indexer/config.yml
 
 %doc
 
 %changelog
+* Tue Jul 14 2026 David Vanhoucke <dvanhoucke@redborder.com>
+- optimize creation of index tasks and enable compaction
 * Thu Feb 20 2025 Miguel Álvarez <malvarez@redborder.com>
 - First version of rb-druid-indexer (Go-based)

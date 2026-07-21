@@ -33,13 +33,16 @@ const (
 )
 
 type TaskConfig struct {
-	TaskName         string   `yaml:"task_name"`
-	Feed             string   `yaml:"feed"`
-	Spec             string   `yaml:"spec"`
-	KafkaBrokers     []string `yaml:"kafka_brokers"`
+	TaskName             string   `yaml:"task_name"`
+	Feed                 string   `yaml:"feed"`
+	Spec                 string   `yaml:"spec"`
+	KafkaBrokers         []string `yaml:"kafka_brokers"`
 	Dimensions           []string `yaml:"dimensions"`
 	DimensionsExclusions []string `yaml:"dimensions_exclusions"`
-	Metrics          []druidrouter.Metrics `yaml:"metrics"`
+	Metrics              []druidrouter.Metrics `yaml:"metrics"`
+	Compaction           *bool    `yaml:"compaction"`
+	CompactionFrequency  string   `yaml:"compaction_frequency"`
+	SkipOffsetFromLatest string   `yaml:"skip_offset_from_latest"`
 }
 
 type Config struct {
@@ -81,6 +84,19 @@ func LoadConfig(filePath string) (*Config, error) {
 	for i, task := range config.Tasks {
 		if len(task.KafkaBrokers) == 0 {
 			config.Tasks[i].KafkaBrokers = []string{DEFAULT_KAFKA_BROKERS}
+		}
+
+		if task.Compaction == nil {
+			defaultCompaction := true
+			config.Tasks[i].Compaction = &defaultCompaction
+		}
+
+		if task.CompactionFrequency == "" {
+			config.Tasks[i].CompactionFrequency = "DAY"
+		}
+
+		if task.SkipOffsetFromLatest == "" {
+			config.Tasks[i].SkipOffsetFromLatest = "PT3H"
 		}
 	}
 

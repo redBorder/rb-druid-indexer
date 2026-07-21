@@ -3,9 +3,17 @@ Description=RedBorder Druid Indexer Manager
 
 [Service]
 Type=simple
+User=rb-druid-indexer
+Group=rb-druid-indexer
 ExecStart=/usr/bin/rb-druid-indexer --config /etc/rb-druid-indexer/config.yml
-KillSignal=SIGQUIT
 TimeoutStopSec=5
+
+# Hardening settings
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+LogsDirectory=rb-druid-indexer
 
 [Install]
 WantedBy=multi-user.target
