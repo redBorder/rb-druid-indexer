@@ -96,18 +96,7 @@ jobs:
 
       - name: Create Kafka topics
         run: |
-          TOPICS=("rb_monitor_post" "rb_flow_post")
-          PARTITIONS=1
-          REPLICATION_FACTOR=1
-          for TOPIC in "${TOPICS[@]}"; do
-            echo "Creating topic: $TOPIC"
-            docker exec kafka kafka-topics --create --topic "$TOPIC" --bootstrap-server localhost:9092 --partitions $PARTITIONS --replication-factor $REPLICATION_FACTOR
-            if [ $? -eq 0 ]; then
-              echo "Topic '$TOPIC' created successfully!"
-            else
-              echo "Failed to create topic '$TOPIC'."
-            fi
-          done
+          ./integration/rb_create_topics.sh
 
       - name: Check Kafka topic existence
         run: |
