@@ -76,7 +76,7 @@ jobs:
 
       - name: Generate docker-compose.yml
         run: |
-          ./integration/rb_generate_compose.sh > docker-compose.yml
+          ./integration/rb_generate_compose.sh > ./integration/docker-compose.yml
 
       - name: Start Docker containers
         run: |

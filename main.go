@@ -113,15 +113,15 @@ func main() {
 
 		routers, err := zkclient.GetDruidRouterInfo(zk.GetConn(), cfg.RouterDiscoveryPath)
 		if err != nil {
-			logger.Log.Errorf("Error retrieving Druid Router info from ZooKeeper: %v. Retrying in 60s...", err)
-			time.Sleep(60 * time.Second)
+			logger.Log.Errorf("Error retrieving Druid Router info from ZooKeeper: %v. Retrying in 10s...", err)
+			time.Sleep(10 * time.Second)
 			continue
 		}
 
 		supervisorTasks, err := druidrouter.GetSupervisors(routers)
 		if err != nil {
-			logger.Log.Errorf("Failed to get supervisor tasks: %v. Retrying in 60s...", err)
-			time.Sleep(60 * time.Second)
+			logger.Log.Errorf("Failed to get supervisor tasks: %v. Retrying in 10s...", err)
+			time.Sleep(10 * time.Second)
 			continue
 		}
 
@@ -148,7 +148,9 @@ func main() {
 				}
 				if !isPresent {
 					logger.Log.Infof("Supervisor %s is no longer in the configuration. Terminating it.", taskName)
-					druidrouter.DeleteTask(routers, taskName)
+					if err := druidrouter.DeleteTask(routers, taskName); err != nil {
+						logger.Log.Errorf("Failed to delete obsolete supervisor %s: %v", taskName, err)
+					}
 				}
 			}
 
@@ -214,7 +216,9 @@ func main() {
 			if isEmpty {
 				if isSupervisorRunning {
 					logger.Log.Infof("Topic %s is empty. Terminating supervisor task %s to free resources.", taskConfig.Feed, taskConfig.TaskName)
-					druidrouter.DeleteTask(routers, taskConfig.TaskName)
+					if err := druidrouter.DeleteTask(routers, taskConfig.TaskName); err != nil {
+						logger.Log.Errorf("Failed to delete supervisor task %s: %v", taskConfig.TaskName, err)
+					}
 				} else {
 					logger.Log.Debugf("Topic %s is empty and supervisor task %s is not running. Skipping.", taskConfig.Feed, taskConfig.TaskName)
 				}
@@ -245,7 +249,9 @@ func main() {
 						logger.Log.Fatalf("Error generating config for task %s: %v", taskConfig.TaskName, err)
 					}
 
-					druidrouter.SubmitTask(routers, jsonStr)
+					if err := druidrouter.SubmitTask(routers, jsonStr); err != nil {
+						logger.Log.Errorf("Failed to submit supervisor task %s: %v", taskConfig.TaskName, err)
+					}
 				} else {
 					logger.Log.Debugf("Topic %s has messages and supervisor task %s is already running.", taskConfig.Feed, taskConfig.TaskName)
 
