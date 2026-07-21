@@ -34,7 +34,7 @@ volumes:
 services:
   postgres:
     container_name: postgres
-    image: postgres:latest
+    image: postgres:16
     ports:
       - "5432:5432"
     volumes:
