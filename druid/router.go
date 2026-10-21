@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"rb-druid-indexer/logger"
 	"rb-druid-indexer/zkclient"
+	"sort"
 	"strings"
 	"time"
 )
@@ -175,6 +176,91 @@ func GetSupervisorStatus(routers []zkclient.DruidRouter, supervisor string) (*Su
 	}
 
 	return &status, string(body), nil
+}
+
+// GetSupervisorDimensions returns the dimension names of a running supervisor's spec.
+// Druid returns them as plain names or as objects ({"type": "string", "name": "..."}).
+func GetSupervisorDimensions(routers []zkclient.DruidRouter, supervisor string) ([]string, error) {
+	if len(routers) == 0 {
+		return nil, fmt.Errorf("no available routers")
+	}
+
+	randomIndex := int(time.Now().UnixNano() % int64(len(routers)))
+	router := routers[randomIndex]
+
+	url := fmt.Sprintf("http://%s:%d/druid/indexer/v1/supervisor/%s", router.Address, router.Port, supervisor)
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch supervisor spec from %s: %w", url, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body from %s: %w", url, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d from %s, response: %s", resp.StatusCode, url, string(body))
+	}
+
+	type dataSchema struct {
+		DimensionsSpec struct {
+			Dimensions []json.RawMessage `json:"dimensions"`
+		} `json:"dimensionsSpec"`
+	}
+	var spec struct {
+		Spec struct {
+			DataSchema *dataSchema `json:"dataSchema"`
+		} `json:"spec"`
+		DataSchema *dataSchema `json:"dataSchema"`
+	}
+	if err := json.Unmarshal(body, &spec); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal supervisor spec from %s: %w", url, err)
+	}
+
+	schema := spec.Spec.DataSchema
+	if schema == nil {
+		schema = spec.DataSchema
+	}
+	if schema == nil {
+		return nil, fmt.Errorf("no dataSchema in supervisor spec from %s", url)
+	}
+
+	dimensions := []string{}
+	for _, raw := range schema.DimensionsSpec.Dimensions {
+		var name string
+		if err := json.Unmarshal(raw, &name); err == nil {
+			dimensions = append(dimensions, name)
+			continue
+		}
+		var obj struct {
+			Name string `json:"name"`
+		}
+		if err := json.Unmarshal(raw, &obj); err != nil {
+			return nil, fmt.Errorf("unexpected dimension %s in supervisor spec from %s", string(raw), url)
+		}
+		dimensions = append(dimensions, obj.Name)
+	}
+
+	return dimensions, nil
+}
+
+// SameDimensions reports whether both lists contain the same dimension names (order is ignored).
+func SameDimensions(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	x := append([]string(nil), a...)
+	y := append([]string(nil), b...)
+	sort.Strings(x)
+	sort.Strings(y)
+	for i := range x {
+		if x[i] != y[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func ResetSupervisor(routers []zkclient.DruidRouter, supervisor string) error {
