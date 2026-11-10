@@ -26,6 +26,7 @@ import (
 	"rb-druid-indexer/kafkaclient"
 	"rb-druid-indexer/logger"
 	zkclient "rb-druid-indexer/zkclient"
+	"slices"
 	"strings"
 	"syscall"
 	"time"
@@ -64,6 +65,9 @@ func main() {
 	if err != nil {
 		logger.Log.Fatalf("Error creating leader node: %v", err)
 	}
+
+	// The configuration is only loaded at startup (the cookbook restarts the service when it changes)
+	resubmitChangedDimensions(cfg, zk)
 
 	cleaned := false
 
@@ -328,5 +332,49 @@ func main() {
 		}
 
 		time.Sleep(60 * time.Second)
+	}
+}
+
+// resubmitChangedDimensions resubmits the spec of every running supervisor whose dimensions differ from the
+// configuration (e.g. after an upgrade). Druid replaces the running supervisor's spec in place, without stopping ingestion.
+func resubmitChangedDimensions(cfg *config.Config, zk *zkclient.ZKClient) {
+	routers, err := zkclient.GetDruidRouterInfo(zk.GetConn(), cfg.RouterDiscoveryPath)
+	if err != nil {
+		logger.Log.Warnf("Not checking supervisor dimensions, no Druid router: %v", err)
+		return
+	}
+	running, err := druidrouter.GetSupervisors(routers)
+	if err != nil {
+		logger.Log.Warnf("Not checking supervisor dimensions, failed to get supervisors: %v", err)
+		return
+	}
+
+	for _, taskConfig := range cfg.Tasks {
+		if len(taskConfig.Dimensions) == 0 || !slices.Contains(running, taskConfig.TaskName) {
+			continue
+		}
+		runningDimensions, err := druidrouter.GetSupervisorDimensions(routers, taskConfig.TaskName)
+		if err != nil {
+			logger.Log.Warnf("Failed to get supervisor dimensions for %s: %v", taskConfig.TaskName, err)
+			continue
+		}
+		if druidrouter.SameDimensions(runningDimensions, taskConfig.Dimensions) {
+			continue
+		}
+
+		logger.Log.Infof("Dimensions of supervisor %s changed (%d running, %d configured). Resubmitting supervisor task.", taskConfig.TaskName, len(runningDimensions), len(taskConfig.Dimensions))
+		dimensionsExclusions := []string{}
+		if taskConfig.DimensionsExclusions != nil {
+			dimensionsExclusions = taskConfig.DimensionsExclusions
+		}
+		jsonStr, err := druidrouter.GenerateConfig(taskConfig.TaskName, taskConfig.KafkaBrokers, taskConfig.Feed,
+			"timestamp", "ruby", taskConfig.Dimensions, dimensionsExclusions, taskConfig.Metrics)
+		if err != nil {
+			logger.Log.Errorf("Error generating config for task %s: %v", taskConfig.TaskName, err)
+			continue
+		}
+		if err := druidrouter.SubmitTask(routers, jsonStr); err != nil {
+			logger.Log.Errorf("Failed to resubmit supervisor task %s: %v", taskConfig.TaskName, err)
+		}
 	}
 }
