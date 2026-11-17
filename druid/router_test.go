@@ -167,3 +167,69 @@ func TestDeleteTask(t *testing.T) {
 		t.Errorf("Expected task body %q, got %q", task, received)
 	}
 }
+
+func TestGetSupervisorDimensions(t *testing.T) {
+	// Druid returns dimensions as plain names or as objects
+	spec := `{"type":"kafka","spec":{"dataSchema":{"dataSource":"rb_flow","dimensionsSpec":{"dimensions":["src_ip",{"type":"string","name":"ja4"},{"type":"long","name":"tcp_rtt"}]}}}}`
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("Expected GET method, got %s", r.Method)
+		}
+		if r.URL.Path != "/druid/indexer/v1/supervisor/rb_flow" {
+			t.Errorf("Unexpected URL path: %s", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(spec))
+	}))
+	defer ts.Close()
+
+	parts := strings.Split(strings.TrimPrefix(ts.URL, "http://"), ":")
+	port, err := strconv.Atoi(parts[1])
+	if err != nil {
+		t.Fatalf("Failed to convert port: %v", err)
+	}
+	routers := []zkclient.DruidRouter{{Address: parts[0], Port: port}}
+
+	dimensions, err := GetSupervisorDimensions(routers, "rb_flow")
+	if err != nil {
+		t.Fatalf("GetSupervisorDimensions returned error: %v", err)
+	}
+
+	expected := []string{"src_ip", "ja4", "tcp_rtt"}
+	if !reflect.DeepEqual(dimensions, expected) {
+		t.Errorf("Expected dimensions %v, got %v", expected, dimensions)
+	}
+}
+
+func TestGetSupervisorDimensionsNotFound(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer ts.Close()
+
+	parts := strings.Split(strings.TrimPrefix(ts.URL, "http://"), ":")
+	port, _ := strconv.Atoi(parts[1])
+	routers := []zkclient.DruidRouter{{Address: parts[0], Port: port}}
+
+	if _, err := GetSupervisorDimensions(routers, "rb_flow"); err == nil {
+		t.Errorf("Expected an error for a missing supervisor")
+	}
+}
+
+func TestSameDimensions(t *testing.T) {
+	cases := []struct {
+		a, b []string
+		same bool
+	}{
+		{[]string{"a", "b"}, []string{"b", "a"}, true},
+		{[]string{"a", "b"}, []string{"a", "b", "os"}, false},
+		{[]string{"a", "b"}, []string{"a", "c"}, false},
+		{[]string{}, []string{}, true},
+	}
+	for _, c := range cases {
+		if got := SameDimensions(c.a, c.b); got != c.same {
+			t.Errorf("SameDimensions(%v, %v) = %v, expected %v", c.a, c.b, got, c.same)
+		}
+	}
+}
